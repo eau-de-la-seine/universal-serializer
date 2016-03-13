@@ -26,6 +26,9 @@ A serialization project for transforming Java objects to another format
 
 ### Java serialization  
   
+    import fr.ekinci.universalserializer.*;
+    import fr.ekinci.universalserializer.exception.*;
+    
     JavaSerializer s = new JavaSerializer();
     byte[] byteArray = s.serialize(new Dumb(123456));
     Dumb newObject = s.unserialize(byteArray);
@@ -54,7 +57,8 @@ A serialization project for transforming Java objects to another format
 
 ### JWT (JSON Web Token) serialization  
   
-    JWTSerializer s = new JWTSerializer();
+    String SECRET = "546T78UINqqsvfzfs<vs<sdvç_è-('éU87Y89YG87";
+    JWTSerializer s = new JWTSerializer(Algorithm.HS256, DumbClass.class, SECRET);
     String jsonWebToken = s.serialize(new Dumb(123456));
     Dumb newObject = s.unserialize(jsonWebToken);
     System.out.println(newObject.getAttr());
