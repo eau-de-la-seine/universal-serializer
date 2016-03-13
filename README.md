@@ -4,24 +4,26 @@ A serialization project for transforming Java objects to another format
 
   
 ### How to use universal-serializer
+  
+```java
+class Dumb implements Serializable {
+    int attr;
 
-    class Dumb implements Serializable {
-        int attr;
-        
-        public Dumb(){}
-        
-        public Dumb(int val){
-            this.attr = val;
-        }
-        
-        public int getAttr(){
-            return attr;
-        }
-        
-        public void setAttr(int val){
-            attr = val;
-        }
+    public Dumb(){}
+
+    public Dumb(int val){
+        this.attr = val;
     }
+
+    public int getAttr(){
+        return attr;
+    }
+
+    public void setAttr(int val){
+        attr = val;
+    }
+}
+```
 
 
 ### Java serialization  
