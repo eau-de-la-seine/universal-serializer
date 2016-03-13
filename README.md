@@ -7,7 +7,7 @@ A serialization project for transforming Java objects to another format
   
 ```java
 class Dumb implements Serializable {
-    int attr;
+    private int attr;
 
     public Dumb(){}
 
