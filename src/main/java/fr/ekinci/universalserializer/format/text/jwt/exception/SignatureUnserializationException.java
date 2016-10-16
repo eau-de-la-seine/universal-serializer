@@ -1,5 +1,7 @@
-package fr.ekinci.universalserializer.exception;
+package fr.ekinci.universalserializer.format.text.jwt.exception;
 
+
+import fr.ekinci.universalserializer.exception.UnserializationException;
 
 /**
  * 

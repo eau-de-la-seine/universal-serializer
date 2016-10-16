@@ -1,17 +1,16 @@
-package fr.ekinci.universalserializer;
+package fr.ekinci.universalserializer.format.binary.java;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import fr.ekinci.universalserializer.Serializer;
 import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.exception.UnserializationException;
 
 
 /**
- * A wrapper class for Java serialization
- * 
+ * Java serialization
+ *
+ * Your implementation class must implements {@link java.io.Serializable}
+ *
  * Note that J does not extends from Serializable, because 
  * you can use a type (like the List<T> interface) which 
  * is not Serializable at compile time but its 
@@ -19,10 +18,10 @@ import fr.ekinci.universalserializer.exception.UnserializationException;
  * 
  * @author Gokan EKINCI
  */
-public class JavaSerializer implements Serializer<byte[]> {
+public class JavaSerializer implements Serializer<Object, byte[]> {
 
     @Override
-    public <J> byte[] serialize(J objectToSerialize) throws SerializationException {
+    public byte[] serialize(Object objectToSerialize) throws SerializationException {
         try(
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos)
@@ -43,6 +42,17 @@ public class JavaSerializer implements Serializer<byte[]> {
             return (J) ois.readObject(); 
         } catch (IOException | ClassNotFoundException e) {
             throw new UnserializationException(e);
+        }
+    }
+
+    @Override
+    public void transferTo(Object objectToTransfer, OutputStream outputStream) throws SerializationException {
+        try(
+            ObjectOutputStream oos = new ObjectOutputStream(outputStream)
+        ){
+            oos.writeObject(objectToTransfer);
+        } catch (IOException e) {
+            throw new SerializationException(e);
         }
     }
 }

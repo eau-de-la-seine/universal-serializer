@@ -1,4 +1,4 @@
-package fr.ekinci.universalserializer;
+package fr.ekinci.universalserializer.format.text.jwt;
 
 import java.lang.reflect.Type;
 import java.security.InvalidKeyException;
@@ -10,25 +10,30 @@ import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import com.google.gson.Gson;
-import fr.ekinci.universalserializer.exception.JWTSerializerException;
+import fr.ekinci.universalserializer.format.text.StringSerializer;
 import fr.ekinci.universalserializer.exception.SerializationException;
-import fr.ekinci.universalserializer.exception.SignatureUnserializationException;
 import fr.ekinci.universalserializer.exception.UnserializationException;
+import fr.ekinci.universalserializer.format.text.jwt.exception.JwtSerializerException;
+import fr.ekinci.universalserializer.format.text.jwt.exception.SignatureUnserializationException;
 
 /**
- * 
+ * JWT serializer
+ *
+ * Your implementation class may not implements {@link java.io.Serializable}
+ * BUT be careful to NOT have circular references
+ *
  * @author Gokan EKINCI
  */
-public class JWTSerializer implements Serializer<String>{
+public class JwtSerializer implements StringSerializer {
     // private final static String ENCODING = "UTF-8"; => use this for getBytes() ?
     private Mac mac;
     private String jsonHeader; 
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
     private Type payloadType;
     
-    public JWTSerializer(String algorithm, Type payloadType, String secret) throws JWTSerializerException {
+    public JwtSerializer(String algorithm, Type payloadType, String secret) throws JwtSerializerException {
         if(algorithm == null || payloadType == null || secret == null){
-            throw new IllegalArgumentException("Parameters in JWTSerializer's constructor must not be null");
+            throw new IllegalArgumentException("Parameters in JwtSerializer's constructor must not be null");
         }
         
         try {
@@ -45,7 +50,7 @@ public class JWTSerializer implements Serializer<String>{
             headerMap.put("alg", algorithm);
             this.jsonHeader = gson.toJson(headerMap);
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-            throw new JWTSerializerException(e);
+            throw new JwtSerializerException(e);
         }
     }
 
@@ -56,7 +61,7 @@ public class JWTSerializer implements Serializer<String>{
      *     => base64Url(header).base64Url(payload).base64Url(hmac(base64Url(header).base64Url(payload), secret))
      */
     @Override
-    public <J> String serialize(J payloadObject) throws SerializationException {
+    public String serialize(Object payloadObject) throws SerializationException {
         if(payloadObject == null){
             throw new IllegalArgumentException("payloadObject must not be null");
         }
@@ -98,5 +103,4 @@ public class JWTSerializer implements Serializer<String>{
         String decodedPayload = new String(decoder.decode(parts[1]));
         return gson.fromJson(decodedPayload, payloadType);
     }
-
 }

@@ -1,9 +1,11 @@
-package fr.ekinci.universalserializer;
+package fr.ekinci.universalserializer.format.text.base64;
 
 import java.util.Base64;
 
 /**
  * Base64Url serialization
+ *
+ * Your implementation class must implements {@link java.io.Serializable}
  * 
  * @author Gokan EKINCI
  */

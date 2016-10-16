@@ -1,35 +1,35 @@
 package fr.ekinci.universalserializer.test;
 
-import org.junit.Assert;
+import fr.ekinci.universalserializer.format.text.jwt.JwtSerializer;
 import org.junit.Test;
-import fr.ekinci.universalserializer.Algorithm;
-import fr.ekinci.universalserializer.JWTSerializer;
-import fr.ekinci.universalserializer.exception.JWTSerializerException;
+import fr.ekinci.universalserializer.format.text.jwt.Algorithm;
+import fr.ekinci.universalserializer.format.text.jwt.exception.JwtSerializerException;
 import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.exception.UnserializationException;
+import static fr.ekinci.universalserializer.test.TestClassUtils.*;
 
-public class JWTSerializerTest {
-    public final static String SECRET = "546T78UINqqsvfzfs<vs<sdvç_è-('éU87Y89YG87";
+/**
+ * A simple test of serialization and unserialization
+ *
+ * @author Gokan EKINCI
+ */
+public class JwtSerializerTest {
+    public final static String SECRET = "546T78UINqqsvfzfs<vs<sdv_-('U87Y89YG87";
     
     @Test
-    public void testSerializeAndUnSerialze(){
+    public void testSerializeAndUnserialize(){
         try {
-            DumbClass dc = new DumbClass();
-            dc.setAttr(123456789);
-            
-            JWTSerializer s = new JWTSerializer(Algorithm.HS256, DumbClass.class, SECRET);
-            
+            JwtSerializer s = new JwtSerializer(Algorithm.HS256, ComplexTestClass.class, SECRET);
+            ComplexTestClass origin = instanciateAndInitializeComplexClass();
+
             // SIGN
-            String sendToClient = s.serialize(dc);
+            String ser = s.serialize(origin);
             
             // VERIFY
-            DumbClass newDc = s.unserialize(sendToClient);
-            Assert.assertEquals(newDc.getAttr(), 123456789);
-            
-            // s.serialize(payloadObject)
-        } catch (JWTSerializerException | SerializationException | UnserializationException e) {
+            ComplexTestClass generated = s.unserialize(ser);
+            compareComplexClassValues(origin, generated);
+        } catch (JwtSerializerException | SerializationException | UnserializationException e) {
             e.printStackTrace();
-            Assert.assertTrue(false);
         }
     }
 
