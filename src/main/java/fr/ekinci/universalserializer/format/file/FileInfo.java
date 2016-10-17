@@ -14,5 +14,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface FileInfo {
     String[] orderedFieldNames();
-    String[] headerColumnNames();
+    String[] headerColumnNames() default {};
 }

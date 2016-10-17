@@ -7,7 +7,7 @@ import fr.ekinci.universalserializer.format.file.FileOptions;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import java.io.ByteArrayOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,10 +17,12 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
-import java.util.List;
+import java.nio.file.attribute.FileAttribute;
+import java.util.*;
 
 /**
+ * Excel serialization
+ *
  * @author Gokan EKINCI
  */
 public class ExcelSerializer<T> extends AbstractFileSerializer<T> {
@@ -82,14 +84,15 @@ public class ExcelSerializer<T> extends AbstractFileSerializer<T> {
     @Override
     public Path serialize(List<T> objectToSerialize) throws SerializationException {
         try {
-            final Path tempFile = (options.destinationPath() != null) ?
+            final Path path = (options.destinationPath() != null) ?
                 Paths.get(options.destinationPath()) :
-                    Files.createTempFile(null, null, null);
-            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                transferTo(objectToSerialize, baos);
-                Files.write(tempFile, baos.toByteArray());
-                return tempFile;
+                    Files.createTempFile(null, null, new FileAttribute[0]);
+
+            try (OutputStream outputStream = Files.newOutputStream(path)) {
+                transferTo(objectToSerialize, outputStream);
             }
+
+            return path;
         } catch (IOException e) {
             throw new SerializationException(e);
         }
@@ -97,7 +100,32 @@ public class ExcelSerializer<T> extends AbstractFileSerializer<T> {
 
     @Override
     public <J> J unserialize(Path objectToUnserialize) throws UnserializationException {
-        return null;
+        try (
+            InputStream inputStream = Files.newInputStream(objectToUnserialize);
+            Workbook workbook = getWoorkbookImpl(inputStream)
+        ) {
+            final Sheet sheet = workbook.getSheetAt(options.sheetIndex());
+            final Iterator<Row> it = sheet.rowIterator();
+            final Class<Cell> cellClass = Cell.class; // For performance issues, declare once
+            final Method addToListMethod = List.class.getMethod("add", Object.class); // For performance issues, declare once
+            final J result = (J) new ArrayList<>();
+
+            // handling header
+            if (options.hasHeader() && it.hasNext()) {
+                it.next();
+            }
+            while (it.hasNext()) {
+                final Row row = it.next();
+                final T tuple = clazz.newInstance();
+                for (int i = 0; i < nbColumns; i++) {
+                    setObjectFieldValue(tuple, i, cellClass, row.getCell(i));
+                }
+                addToListMethod.invoke(result, tuple);
+            }
+            return result;
+        } catch (IOException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new UnserializationException(e);
+        }
     }
 
     @Override
@@ -150,7 +178,7 @@ public class ExcelSerializer<T> extends AbstractFileSerializer<T> {
         CellStyle dateFormatStyle
     ) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         final Field field = requiredFields.get(fieldIndex);
-        field.setAccessible(true);
+        // field.setAccessible(true);
         final Object objectToTransferFieldValue = field.get(objectToTransfer);
         if (objectToTransferFieldValue != null) {
             final Method cellSetterMethod = getCellSetterMethod(field.getType(), cellClass, cell, dateFormatStyle);
@@ -175,9 +203,9 @@ public class ExcelSerializer<T> extends AbstractFileSerializer<T> {
         Cell cell,
         CellStyle dateFormatStyle
     ) throws NoSuchMethodException {
-        if(fieldClass == String.class) {
+        if (fieldClass == String.class) {
             return cellClass.getMethod("setCellValue", String.class);
-        } else if(fieldClass == Date.class) {
+        } else if (fieldClass == Date.class) {
             cell.setCellStyle(dateFormatStyle);
             return cellClass.getMethod("setCellValue", Date.class);
         } else if (fieldClass == boolean.class || fieldClass == Boolean.class) {
@@ -186,5 +214,76 @@ public class ExcelSerializer<T> extends AbstractFileSerializer<T> {
             // For all other number primitives (short, int etc...)
             return cellClass.getMethod("setCellValue", double.class);
         }
+    }
+
+
+
+    /**
+     * Setting object field value
+     *
+     * @param tuple
+     * @param fieldIndex
+     * @param cellClass
+     * @param cell
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    private void setObjectFieldValue(T tuple, int fieldIndex, Class<Cell> cellClass, Cell cell) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Field field = requiredFields.get(fieldIndex);
+        // field.setAccessible(true);
+        final Object cellValue = getCellGetterMethod(field.getType(), cellClass).invoke(cell);
+        if (cellValue != null) {
+            field.set(tuple, cellValue);
+        }
+    }
+
+    /**
+     * Return adapted method for setting cell value
+     * boolean, Date, String, double (all number types will be `double`)
+     *
+     * @param fieldClass
+     * @param cellClass
+     * @return
+     * @throws NoSuchMethodException
+     */
+    private Method getCellGetterMethod(
+        Class<?> fieldClass,
+        Class<Cell> cellClass
+    ) throws NoSuchMethodException {
+        if (fieldClass == String.class) {
+            return cellClass.getMethod("getStringCellValue");
+        } else if (fieldClass == Date.class) {
+            return cellClass.getMethod("getDateCellValue");
+        } else if (fieldClass == boolean.class || fieldClass == Boolean.class) {
+            return cellClass.getMethod("getBooleanCellValue");
+        } else {
+            return cellClass.getMethod("getNumericCellValue");
+        }
+    }
+
+
+    // TODO
+    private Map<Class<?>, Method> cellGetterMethodMap = new HashMap<>();
+    private Map<Class<?>, Method> cellSetterMethodMap = new HashMap<>();
+
+    private void initCellGetterMethodMap(Map<Class<?>, Method> cellGetterMethodMap) throws NoSuchMethodException {
+        final Class<Cell> cellClass = Cell.class;
+        cellGetterMethodMap.put(String.class, cellClass.getMethod("getStringCellValue"));
+        cellGetterMethodMap.put(Date.class, cellClass.getMethod("getDateCellValue"));
+        final Method getBooleanCellValueMethod = cellClass.getMethod("getBooleanCellValue");
+        cellGetterMethodMap.put(boolean.class, getBooleanCellValueMethod);
+        cellGetterMethodMap.put(Boolean.class, getBooleanCellValueMethod);
+        cellGetterMethodMap.put(null, cellClass.getMethod("getNumericCellValue"));
+    }
+
+    private void initCellSetterMethodMap(Map<Class<?>, Method> cellSetterMethodMap) throws NoSuchMethodException {
+        final Class<Cell> cellClass = Cell.class;
+        cellSetterMethodMap.put(String.class, cellClass.getMethod("setCellValue", String.class));
+        cellSetterMethodMap.put(Date.class, cellClass.getMethod("setCellValue", Date.class));
+        final Method setBooleanCellValueMethod = cellClass.getMethod("setCellValue", boolean.class);
+        cellSetterMethodMap.put(boolean.class, setBooleanCellValueMethod);
+        cellSetterMethodMap.put(Boolean.class, setBooleanCellValueMethod);
+        cellSetterMethodMap.put(null, cellClass.getMethod("setCellValue", double.class));
     }
 }

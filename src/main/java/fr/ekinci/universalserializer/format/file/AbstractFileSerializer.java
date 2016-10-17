@@ -32,6 +32,11 @@ public abstract class AbstractFileSerializer<T> implements Serializer<List<T>, P
             getAllDeclaredFields(new ArrayList<>(), clazz),
             authorizedFieldTypes
         );
+
+        // Make requiredFields accessible true once for performance issue
+        for(Field requiredField : requiredFields) {
+            requiredField.setAccessible(true);
+        }
     }
 
     /**
@@ -48,17 +53,25 @@ public abstract class AbstractFileSerializer<T> implements Serializer<List<T>, P
     }
 
     /**
+     * Check if {@link FileInfo#orderedFieldNames()} has at least 1 element
+     *
      * Check if {@link FileInfo#orderedFieldNames()} and {@link FileInfo#headerColumnNames()}
      * has the same length then return the length
      *
      * @return
      */
     protected int checkSizes() {
-        if(fileInfo.orderedFieldNames().length != fileInfo.headerColumnNames().length) {
-            throw new IllegalArgumentException("FileInfo#orderedFieldNames and FileInfo#headerColumnNames must have same number of elements");
+        final int nbColumns = fileInfo.orderedFieldNames().length;
+
+        if(nbColumns < 1) {
+            throw new IllegalArgumentException("FileInfo#orderedFieldNames must have at least 1 element");
         }
 
-        return fileInfo.headerColumnNames().length;
+        if(options.hasHeader() && nbColumns != fileInfo.headerColumnNames().length) {
+            throw new IllegalArgumentException("Header is ON, but FileInfo#orderedFieldNames and FileInfo#headerColumnNames do not have the same number of elements");
+        }
+
+        return nbColumns;
     }
 
     /**

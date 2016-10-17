@@ -9,18 +9,21 @@ public class FileOptions {
     private final String dateFormat;
     private final String destinationPath;
     private final boolean hasHeader;
-    private final char separator;
+    private final char separator; // For CSV
+    private final int sheetIndex; // For Excel
 
     private FileOptions(
         String dateFormat,
         String destinationPath,
         boolean hasHeader,
-        char separator
+        char separator,
+        int sheetIndex
     ) {
         this.dateFormat = dateFormat;
         this.destinationPath = destinationPath;
         this.hasHeader = hasHeader;
         this.separator = separator;
+        this.sheetIndex = sheetIndex;
     }
 
     public String dateFormat() {
@@ -39,6 +42,10 @@ public class FileOptions {
         return separator;
     }
 
+    public int sheetIndex() {
+        return sheetIndex;
+    }
+
     public static FileOptionsBuilder builder() {
         return new FileOptionsBuilder();
     }
@@ -49,12 +56,14 @@ public class FileOptions {
         private String destinationPath;
         private boolean hasHeader;
         private char separator;
+        private int sheetIndex;
 
         private FileOptionsBuilder() {
             dateFormat = "yyyy-MM-dd";
             destinationPath = null; // If null then temp file
             hasHeader = false;
             separator = ',';
+            sheetIndex = 0;
         }
 
         public FileOptionsBuilder dateFormat(String dateFormat) {
@@ -77,6 +86,11 @@ public class FileOptions {
             return this;
         }
 
+        public FileOptionsBuilder sheetIndex(int sheetIndex) {
+            this.sheetIndex = sheetIndex;
+            return this;
+        }
+
         /**
          * Build operation
          *
@@ -87,7 +101,8 @@ public class FileOptions {
                 dateFormat,
                 destinationPath,
                 hasHeader,
-                separator
+                separator,
+                sheetIndex
             );
         }
     }
