@@ -4,6 +4,7 @@ import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.exception.UnserializationException;
 import fr.ekinci.universalserializer.format.text.xml.XmlSerializer;
 import org.junit.Test;
+
 import static fr.ekinci.universalserializer.test.TestClassUtils.compareComplexClassValues;
 import static fr.ekinci.universalserializer.test.TestClassUtils.instanciateAndInitializeComplexClass;
 
@@ -14,7 +15,7 @@ import static fr.ekinci.universalserializer.test.TestClassUtils.instanciateAndIn
  */
 public class XmlSerializerTest {
     @Test
-    public void testSerializeAndUnserialize(){
+    public void testSerializeAndUnserialize() {
         XmlSerializer s = new XmlSerializer(ComplexTestClass.class);
         ComplexTestClass origin = instanciateAndInitializeComplexClass();
 

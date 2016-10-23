@@ -1,7 +1,5 @@
 package fr.ekinci.universalserializer.test;
 
-import fr.ekinci.universalserializer.format.file.FileInfo;
-
 import java.io.Serializable;
 
 /**

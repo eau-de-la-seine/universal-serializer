@@ -1,6 +1,7 @@
 package fr.ekinci.universalserializer.test;
 
 import org.junit.Assert;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,13 +37,13 @@ public class TestClassUtils {
         obj.setAttr9("9");
 
         // Complex attributes initialization
-        obj.setAttr10(new ArrayList<Double>(){{
+        obj.setAttr10(new ArrayList<Double>() {{
             add(10.1d);
             add(10.2d);
             add(10.3d);
         }});
 
-        obj.setAttr11(new ArrayList<String>(){{
+        obj.setAttr11(new ArrayList<String>() {{
             add("11.1");
             add("11.2");
             add("11.3");
@@ -50,7 +51,7 @@ public class TestClassUtils {
 
         obj.setAttr12(new ComplexTestClass());
 
-        obj.setAttr13(new ArrayList<ComplexTestClass>(){{
+        obj.setAttr13(new ArrayList<ComplexTestClass>() {{
             add(new ComplexTestClass());
             add(new ComplexTestClass());
             add(new ComplexTestClass());

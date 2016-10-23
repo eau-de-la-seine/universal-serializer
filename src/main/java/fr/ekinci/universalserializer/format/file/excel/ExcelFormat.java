@@ -3,6 +3,6 @@ package fr.ekinci.universalserializer.format.file.excel;
 /**
  * @author Gokan EKINCI
  */
-public enum ExcelType {
+public enum ExcelFormat {
     XLS, XLSX
 }

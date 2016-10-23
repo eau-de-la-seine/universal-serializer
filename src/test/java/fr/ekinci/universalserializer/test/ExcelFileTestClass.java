@@ -12,12 +12,12 @@ import java.util.Date;
  * @author Gokan EKINCI
  */
 @FileInfo(
-    orderedFieldNames = {
-        "attr1", "attr2", "attr3", "attr4", "attr5", "attr6", "attr7", "attr8", "attr9", "attr10", "attr11", "attr12", "attr13"
-    },
-    headerColumnNames = {
-        "Col 1", "Col 2", "Col 3", "Col 4", "Col 5", "Col 6", "Col 7", "Col 8", "Col 9", "Col 10", "Col 11", "Col 12", "Col 13"
-    })
+        orderedFieldNames = {
+                "attr1", "attr2", "attr3", "attr4", "attr5", "attr6", "attr7", "attr8", "attr9", "attr10", "attr11", "attr12", "attr13"
+        },
+        headerColumnNames = {
+                "Col 1", "Col 2", "Col 3", "Col 4", "Col 5", "Col 6", "Col 7", "Col 8", "Col 9", "Col 10", "Col 11", "Col 12", "Col 13"
+        })
 public class ExcelFileTestClass {
     private String attr1;
     private Date attr2;

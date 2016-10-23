@@ -16,19 +16,19 @@ import fr.ekinci.universalserializer.exception.UnserializationException;
  */
 public abstract class AbstractBase64Serializer implements StringSerializer {
     protected Base64.Encoder encoder;
-    protected Base64.Decoder decoder; 
-    
-    public AbstractBase64Serializer(Base64.Encoder encoder, Base64.Decoder decoder){
+    protected Base64.Decoder decoder;
+
+    public AbstractBase64Serializer(Base64.Encoder encoder, Base64.Decoder decoder) {
         this.encoder = encoder;
         this.decoder = decoder;
     }
-    
+
     @Override
     public String serialize(Object objectToSerialize) throws SerializationException {
-        try(
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos)
-        ){
+        try (
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(baos)
+        ) {
             oos.writeObject(objectToSerialize);
             return encoder.encodeToString(baos.toByteArray());
         } catch (IOException e) {
@@ -38,11 +38,11 @@ public abstract class AbstractBase64Serializer implements StringSerializer {
 
     @Override
     public <J> J unserialize(String objectToUnserialize) throws UnserializationException {
-        try(
-            ByteArrayInputStream bais = new ByteArrayInputStream(decoder.decode(objectToUnserialize));
-            ObjectInputStream ois = new ObjectInputStream(bais)
-        ){
-            return (J) ois.readObject(); 
+        try (
+                ByteArrayInputStream bais = new ByteArrayInputStream(decoder.decode(objectToUnserialize));
+                ObjectInputStream ois = new ObjectInputStream(bais)
+        ) {
+            return (J) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             throw new UnserializationException(e);
         }

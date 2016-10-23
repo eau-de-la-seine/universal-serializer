@@ -1,6 +1,7 @@
 package fr.ekinci.universalserializer.format.file;
 
 import fr.ekinci.universalserializer.Serializer;
+
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -29,12 +30,12 @@ public abstract class AbstractFileSerializer<T> implements Serializer<List<T>, P
 
         // Class must have valid attributes (field types)
         this.requiredFields = checkRequiredFields(
-            getAllDeclaredFields(new ArrayList<>(), clazz),
-            authorizedFieldTypes
+                getAllDeclaredFields(new ArrayList<>(), clazz),
+                authorizedFieldTypes
         );
 
         // Make requiredFields accessible true once for performance issue
-        for(Field requiredField : requiredFields) {
+        for (Field requiredField : requiredFields) {
             requiredField.setAccessible(true);
         }
     }
@@ -45,7 +46,7 @@ public abstract class AbstractFileSerializer<T> implements Serializer<List<T>, P
      * @return
      */
     protected FileInfo checkFileInfoAnnotation() {
-        if(!clazz.isAnnotationPresent(FileInfo.class)){
+        if (!clazz.isAnnotationPresent(FileInfo.class)) {
             throw new IllegalArgumentException("Class must be annotated with @FileInfo");
         }
 
@@ -54,7 +55,7 @@ public abstract class AbstractFileSerializer<T> implements Serializer<List<T>, P
 
     /**
      * Check if {@link FileInfo#orderedFieldNames()} has at least 1 element
-     *
+     * <p>
      * Check if {@link FileInfo#orderedFieldNames()} and {@link FileInfo#headerColumnNames()}
      * has the same length then return the length
      *
@@ -63,11 +64,11 @@ public abstract class AbstractFileSerializer<T> implements Serializer<List<T>, P
     protected int checkSizes() {
         final int nbColumns = fileInfo.orderedFieldNames().length;
 
-        if(nbColumns < 1) {
+        if (nbColumns < 1) {
             throw new IllegalArgumentException("FileInfo#orderedFieldNames must have at least 1 element");
         }
 
-        if(options.hasHeader() && nbColumns != fileInfo.headerColumnNames().length) {
+        if (options.hasHeader() && nbColumns != fileInfo.headerColumnNames().length) {
             throw new IllegalArgumentException("Header is ON, but FileInfo#orderedFieldNames and FileInfo#headerColumnNames do not have the same number of elements");
         }
 
@@ -91,9 +92,9 @@ public abstract class AbstractFileSerializer<T> implements Serializer<List<T>, P
         }
         if (!fieldTypeFound) {
             throw new IllegalArgumentException(
-                "The field named `" + field.getName()
-                + "` which has `" + field.getType()
-                + "` type is NOT an accepted type"
+                    "The field named `" + field.getName()
+                            + "` which has `" + field.getType()
+                            + "` type is NOT an accepted type"
             );
         }
 

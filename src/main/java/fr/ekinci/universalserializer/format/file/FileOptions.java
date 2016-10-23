@@ -1,5 +1,8 @@
 package fr.ekinci.universalserializer.format.file;
 
+import fr.ekinci.universalserializer.format.file.excel.ExcelFormat;
+import org.apache.commons.csv.CSVFormat;
+
 /**
  * Immutable class for defining file options with a builder pattern
  *
@@ -9,20 +12,24 @@ public class FileOptions {
     private final String dateFormat;
     private final String destinationPath;
     private final boolean hasHeader;
-    private final char separator; // For CSV
+    // private final char separator; // For CSV
+    private final CSVFormat csvFormat;
+    private final ExcelFormat excelFormat;
     private final int sheetIndex; // For Excel
 
     private FileOptions(
         String dateFormat,
         String destinationPath,
         boolean hasHeader,
-        char separator,
+        CSVFormat csvFormat,
+        ExcelFormat excelFormat,
         int sheetIndex
     ) {
         this.dateFormat = dateFormat;
         this.destinationPath = destinationPath;
         this.hasHeader = hasHeader;
-        this.separator = separator;
+        this.csvFormat = csvFormat;
+        this.excelFormat = excelFormat;
         this.sheetIndex = sheetIndex;
     }
 
@@ -38,8 +45,12 @@ public class FileOptions {
         return hasHeader;
     }
 
-    public char separator() {
-        return separator;
+    public CSVFormat csvFormat() {
+        return csvFormat;
+    }
+
+    public ExcelFormat excelFormat() {
+        return excelFormat;
     }
 
     public int sheetIndex() {
@@ -55,14 +66,16 @@ public class FileOptions {
         private String dateFormat;
         private String destinationPath;
         private boolean hasHeader;
-        private char separator;
+        private CSVFormat csvFormat;
+        private ExcelFormat excelFormat;
         private int sheetIndex;
 
         private FileOptionsBuilder() {
             dateFormat = "yyyy-MM-dd";
             destinationPath = null; // If null then temp file
             hasHeader = false;
-            separator = ',';
+            csvFormat = CSVFormat.DEFAULT;
+            excelFormat = ExcelFormat.XLSX;
             sheetIndex = 0;
         }
 
@@ -81,8 +94,13 @@ public class FileOptions {
             return this;
         }
 
-        public FileOptionsBuilder separator(char separator) {
-            this.separator = separator;
+        public FileOptionsBuilder csvFormat(CSVFormat csvFormat) {
+            this.csvFormat = csvFormat;
+            return this;
+        }
+
+        public FileOptionsBuilder excelFormat(ExcelFormat excelFormat) {
+            this.excelFormat = excelFormat;
             return this;
         }
 
@@ -101,7 +119,8 @@ public class FileOptions {
                 dateFormat,
                 destinationPath,
                 hasHeader,
-                separator,
+                csvFormat,
+                excelFormat,
                 sheetIndex
             );
         }

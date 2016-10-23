@@ -5,6 +5,7 @@ import fr.ekinci.universalserializer.format.text.base64.Base64Serializer;
 import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.exception.UnserializationException;
 import org.junit.Test;
+
 import static fr.ekinci.universalserializer.test.TestClassUtils.*;
 
 /**
@@ -15,7 +16,7 @@ import static fr.ekinci.universalserializer.test.TestClassUtils.*;
 public class Base64SerializerTest {
 
     @Test
-    public void testSerializeAndUnserialize(){
+    public void testSerializeAndUnserialize() {
         AbstractBase64Serializer s = new Base64Serializer();
         ComplexTestClass origin = instanciateAndInitializeComplexClass();
 
