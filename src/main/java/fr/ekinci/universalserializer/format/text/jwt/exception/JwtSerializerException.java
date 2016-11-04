@@ -6,7 +6,7 @@ package fr.ekinci.universalserializer.format.text.jwt.exception;
  */
 public class JwtSerializerException extends Exception {
 
-    public JwtSerializerException(Throwable t) {
-        super(t);
-    }
+	public JwtSerializerException(Throwable t) {
+		super(t);
+	}
 }

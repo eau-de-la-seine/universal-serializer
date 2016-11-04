@@ -12,12 +12,12 @@ import java.io.OutputStream;
  * @author Gokan EKINCI
  */
 public interface StringSerializer extends Serializer<Object, String> {
-    @Override
-    default void transferTo(Object objectToTransfer, OutputStream outputStream) throws SerializationException {
-        try {
-            outputStream.write(serialize(objectToTransfer).getBytes());
-        } catch (IOException e) {
-            throw new SerializationException(e);
-        }
-    }
+	@Override
+	default void transferTo(Object objectToTransfer, OutputStream outputStream) throws SerializationException {
+		try {
+			outputStream.write(serialize(objectToTransfer).getBytes());
+		} catch (IOException e) {
+			throw new SerializationException(e);
+		}
+	}
 }

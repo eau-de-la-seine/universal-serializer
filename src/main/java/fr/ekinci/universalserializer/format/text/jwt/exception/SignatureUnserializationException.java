@@ -8,7 +8,7 @@ import fr.ekinci.universalserializer.exception.UnserializationException;
  */
 public class SignatureUnserializationException extends UnserializationException {
 
-    public SignatureUnserializationException(String message) {
-        super(message);
-    }
+	public SignatureUnserializationException(String message) {
+		super(message);
+	}
 }

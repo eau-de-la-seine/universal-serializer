@@ -11,7 +11,7 @@ import java.util.Base64;
  */
 public class Base64UrlSerializer extends AbstractBase64Serializer {
 
-    public Base64UrlSerializer() {
-        super(Base64.getUrlEncoder(), Base64.getUrlDecoder());
-    }
+	public Base64UrlSerializer() {
+		super(Base64.getUrlEncoder(), Base64.getUrlDecoder());
+	}
 }

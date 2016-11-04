@@ -15,21 +15,21 @@ import static fr.ekinci.universalserializer.test.TestClassUtils.*;
  */
 public class Base64SerializerTest {
 
-    @Test
-    public void testSerializeAndUnserialize() {
-        AbstractBase64Serializer s = new Base64Serializer();
-        ComplexTestClass origin = instanciateAndInitializeComplexClass();
+	@Test
+	public void testSerializeAndUnserialize() {
+		AbstractBase64Serializer s = new Base64Serializer();
+		ComplexTestClass origin = instanciateAndInitializeComplexClass();
 
-        try {
-            // Serialization
-            String ser = s.serialize(origin);
+		try {
+			// Serialization
+			String ser = s.serialize(origin);
 
-            // Unserialization
-            ComplexTestClass generated = s.unserialize(ser);
+			// Unserialization
+			ComplexTestClass generated = s.unserialize(ser);
 
-            compareComplexClassValues(origin, generated);
-        } catch (SerializationException | UnserializationException e) {
-            e.printStackTrace();
-        }
-    }
+			compareComplexClassValues(origin, generated);
+		} catch (SerializationException | UnserializationException e) {
+			e.printStackTrace();
+		}
+	}
 }

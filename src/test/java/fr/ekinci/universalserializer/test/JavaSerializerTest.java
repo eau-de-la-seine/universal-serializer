@@ -14,22 +14,22 @@ import static fr.ekinci.universalserializer.test.TestClassUtils.*;
  */
 public class JavaSerializerTest {
 
-    @Test
-    public void testSerializeAndUnserialize() {
-        JavaSerializer s = new JavaSerializer();
-        ComplexTestClass origin = instanciateAndInitializeComplexClass();
+	@Test
+	public void testSerializeAndUnserialize() {
+		JavaSerializer s = new JavaSerializer();
+		ComplexTestClass origin = instanciateAndInitializeComplexClass();
 
-        try {
-            // Serialization
-            byte[] ser = s.serialize(origin);
+		try {
+			// Serialization
+			byte[] ser = s.serialize(origin);
 
-            // Unserialization
-            ComplexTestClass generated = s.unserialize(ser);
+			// Unserialization
+			ComplexTestClass generated = s.unserialize(ser);
 
-            compareComplexClassValues(origin, generated);
-        } catch (SerializationException | UnserializationException e) {
-            e.printStackTrace();
-        }
-    }
+			compareComplexClassValues(origin, generated);
+		} catch (SerializationException | UnserializationException e) {
+			e.printStackTrace();
+		}
+	}
 
 }
