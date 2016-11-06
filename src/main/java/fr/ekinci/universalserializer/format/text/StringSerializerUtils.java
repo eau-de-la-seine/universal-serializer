@@ -11,11 +11,15 @@ import java.io.OutputStream;
  *
  * @author Gokan EKINCI
  */
-public interface StringSerializer extends Serializer<Object, String> {
-	@Override
-	default void transferTo(Object objectToTransfer, OutputStream outputStream) throws SerializationException {
+public class StringSerializerUtils {
+	public static void defaultTransferTo(
+			Serializer<Object, String> serializer,
+			Object objectToTransfer,
+			OutputStream outputStream
+	) throws SerializationException {
 		try {
-			outputStream.write(serialize(objectToTransfer).getBytes());
+			outputStream.write(serializer.serialize(objectToTransfer).getBytes());
+			outputStream.flush();
 		} catch (IOException e) {
 			throw new SerializationException(e);
 		}

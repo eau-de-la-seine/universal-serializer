@@ -56,7 +56,7 @@ You have builder pattern based `FileOptions` class in order to specify your :
     MyClass unserialized = s.unserialize(base64String);
 
 
-### CSV serialization (*under development*)
+### CSV serialization
 
     CSVSerializer<MyClass> s = new CSVSerializer<>(MyClass.class /* , your FileOptions */);
     Path path = s.serialize(new ArrayList<MyClass>());

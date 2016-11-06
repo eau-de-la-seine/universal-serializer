@@ -1,11 +1,12 @@
 package fr.ekinci.universalserializer.test;
 
+import fr.ekinci.universalserializer.test.pojo.ComplexTestClass;
 import org.junit.Test;
 import fr.ekinci.universalserializer.format.binary.java.JavaSerializer;
 import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.exception.UnserializationException;
 
-import static fr.ekinci.universalserializer.test.TestClassUtils.*;
+import static fr.ekinci.universalserializer.test.utils.TestClassUtils.*;
 
 /**
  * A simple test of serialization and unserialization
@@ -26,6 +27,7 @@ public class JavaSerializerTest {
 			// Unserialization
 			ComplexTestClass generated = s.unserialize(ser);
 
+			// Test
 			compareComplexClassValues(origin, generated);
 		} catch (SerializationException | UnserializationException e) {
 			e.printStackTrace();

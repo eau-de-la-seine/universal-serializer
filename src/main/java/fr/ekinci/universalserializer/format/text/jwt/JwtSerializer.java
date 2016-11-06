@@ -1,5 +1,6 @@
 package fr.ekinci.universalserializer.format.text.jwt;
 
+import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -11,7 +12,8 @@ import java.util.Objects;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import com.google.gson.Gson;
-import fr.ekinci.universalserializer.format.text.StringSerializer;
+import fr.ekinci.universalserializer.Serializer;
+import fr.ekinci.universalserializer.format.text.StringSerializerUtils;
 import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.exception.UnserializationException;
 import fr.ekinci.universalserializer.format.text.jwt.exception.JwtSerializerException;
@@ -25,7 +27,7 @@ import fr.ekinci.universalserializer.format.text.jwt.exception.SignatureUnserial
  *
  * @author Gokan EKINCI
  */
-public class JwtSerializer implements StringSerializer {
+public class JwtSerializer implements Serializer<Object, String> {
 	// private final static String ENCODING = "UTF-8"; => use this for getBytes() ?
 	private final Mac mac;
 	private final String jsonHeader;
@@ -99,6 +101,11 @@ public class JwtSerializer implements StringSerializer {
 
 		String decodedPayload = new String(decoder.decode(parts[1]));
 		return gson.fromJson(decodedPayload, payloadType);
+	}
+
+	@Override
+	public void transferTo(Object objectToTransfer, OutputStream outputStream) throws SerializationException {
+		StringSerializerUtils.defaultTransferTo(this, objectToTransfer, outputStream);
 	}
 
 	/**

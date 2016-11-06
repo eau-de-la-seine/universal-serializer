@@ -3,6 +3,8 @@ package fr.ekinci.universalserializer.format.file;
 import fr.ekinci.universalserializer.format.file.excel.ExcelFormat;
 import org.apache.commons.csv.CSVFormat;
 
+import java.time.format.DateTimeFormatter;
+
 /**
  * Immutable class for defining file options with a builder pattern
  *
@@ -71,7 +73,7 @@ public class FileOptions {
 		private int sheetIndex;
 
 		private FileOptionsBuilder() {
-			dateFormat = "yyyy-MM-dd";
+			dateFormat = "yyyy-MM-dd HH:mm:ss";
 			destinationPath = null; // If null then temp file
 			hasHeader = false;
 			csvFormat = CSVFormat.DEFAULT;

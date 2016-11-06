@@ -48,10 +48,10 @@ public class JavaSerializer implements Serializer<Object, byte[]> {
 
 	@Override
 	public void transferTo(Object objectToTransfer, OutputStream outputStream) throws SerializationException {
-		try (
-				ObjectOutputStream oos = new ObjectOutputStream(outputStream)
-		) {
+		try {
+			final ObjectOutputStream oos = new ObjectOutputStream(outputStream);
 			oos.writeObject(objectToTransfer);
+			oos.flush();
 		} catch (IOException e) {
 			throw new SerializationException(e);
 		}

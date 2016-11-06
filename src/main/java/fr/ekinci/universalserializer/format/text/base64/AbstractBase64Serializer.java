@@ -3,7 +3,8 @@ package fr.ekinci.universalserializer.format.text.base64;
 import java.io.*;
 import java.util.Base64;
 
-import fr.ekinci.universalserializer.format.text.StringSerializer;
+import fr.ekinci.universalserializer.Serializer;
+import fr.ekinci.universalserializer.format.text.StringSerializerUtils;
 import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.exception.UnserializationException;
 
@@ -14,7 +15,7 @@ import fr.ekinci.universalserializer.exception.UnserializationException;
  *
  * @author Gokan EKINCI
  */
-public abstract class AbstractBase64Serializer implements StringSerializer {
+public abstract class AbstractBase64Serializer implements Serializer<Object, String> {
 	protected Base64.Encoder encoder;
 	protected Base64.Decoder decoder;
 
@@ -46,5 +47,10 @@ public abstract class AbstractBase64Serializer implements StringSerializer {
 		} catch (IOException | ClassNotFoundException e) {
 			throw new UnserializationException(e);
 		}
+	}
+
+	@Override
+	public void transferTo(Object objectToTransfer, OutputStream outputStream) throws SerializationException {
+		StringSerializerUtils.defaultTransferTo(this, objectToTransfer, outputStream);
 	}
 }

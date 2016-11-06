@@ -1,8 +1,5 @@
-package fr.ekinci.universalserializer.test;
+package fr.ekinci.universalserializer.test.pojo;
 
-/**
- * Created by gokan on 16/10/2016.
- */
 
 import fr.ekinci.universalserializer.format.file.FileInfo;
 
@@ -13,12 +10,13 @@ import java.util.Date;
  */
 @FileInfo(
 		orderedFieldNames = {
-				"attr1", "attr2", "attr3", "attr4", "attr5", "attr6", "attr7", "attr8", "attr9", "attr10", "attr11", "attr12", "attr13"
+				"attr0", "attr1", "attr2", "attr3", "attr4", "attr5", "attr6", "attr7", "attr8", "attr9", "attr10", "attr11", "attr12", "attr13", "attr14", "attr15", "attr16"
 		},
 		headerColumnNames = {
-				"Col 1", "Col 2", "Col 3", "Col 4", "Col 5", "Col 6", "Col 7", "Col 8", "Col 9", "Col 10", "Col 11", "Col 12", "Col 13"
-		})
-public class ExcelFileTestClass {
+				"Col 0", "Col 1", "Col 2", "Col 3", "Col 4", "Col 5", "Col 6", "Col 7", "Col 8", "Col 9", "Col 10", "Col 11", "Col 12", "Col 13", "Col 14", "Col 15", "Col 16"
+		}
+)
+public class ExcelFileTestClass extends FileTestParentClass {
 	private String attr1;
 	private Date attr2;
 	private boolean attr3;
@@ -35,8 +33,22 @@ public class ExcelFileTestClass {
 	private Float attr14;
 	private double attr15;
 	private Double attr16;
-	// TODO: Create super class
 
+	public String getAttr1() {
+		return attr1;
+	}
+
+	public void setAttr1(String attr1) {
+		this.attr1 = attr1;
+	}
+
+	public Date getAttr2() {
+		return attr2;
+	}
+
+	public void setAttr2(Date attr2) {
+		this.attr2 = attr2;
+	}
 
 	public boolean isAttr3() {
 		return attr3;

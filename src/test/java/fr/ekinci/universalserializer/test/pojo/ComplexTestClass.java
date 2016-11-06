@@ -1,9 +1,9 @@
-package fr.ekinci.universalserializer.test;
+package fr.ekinci.universalserializer.test.pojo;
 
 import java.util.List;
 
 /**
- * Created by gokan on 10/10/2016.
+ * @author Gokan EKINCI
  */
 public class ComplexTestClass extends SimpleTestClass {
 	// Complex types (NOT for flat files serialization)

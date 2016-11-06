@@ -1,4 +1,4 @@
-package fr.ekinci.universalserializer.test;
+package fr.ekinci.universalserializer.test.pojo;
 
 import java.io.Serializable;
 

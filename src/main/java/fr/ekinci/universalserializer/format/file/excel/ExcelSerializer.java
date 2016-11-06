@@ -1,6 +1,7 @@
 package fr.ekinci.universalserializer.format.file.excel;
 
 import fr.ekinci.universalserializer.exception.SerializationException;
+import fr.ekinci.universalserializer.format.file.FileSerializerUtils;
 import fr.ekinci.universalserializer.format.file.excel.exception.ExcelSerializerException;
 import fr.ekinci.universalserializer.exception.UnserializationException;
 import fr.ekinci.universalserializer.format.file.AbstractFileSerializer;
@@ -17,12 +18,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileAttribute;
 import java.util.*;
 
 /**
  * Excel serialization
+ *
+ * 16 types are supported, see {@link ExcelSerializer#ExcelSerializer(Class, FileOptions)}
  *
  * @author Gokan EKINCI
  */
@@ -105,19 +106,7 @@ public class ExcelSerializer<T> extends AbstractFileSerializer<T> {
 
 	@Override
 	public Path serialize(List<T> objectToSerialize) throws SerializationException {
-		try {
-			final Path path = (options.destinationPath() != null) ?
-					Paths.get(options.destinationPath()) :
-					Files.createTempFile(null, null, new FileAttribute[0]);
-
-			try (OutputStream outputStream = Files.newOutputStream(path)) {
-				transferTo(objectToSerialize, outputStream);
-			}
-
-			return path;
-		} catch (IOException e) {
-			throw new SerializationException(e);
-		}
+		return FileSerializerUtils.defaultSerialize(this, objectToSerialize, options.destinationPath());
 	}
 
 	@Override

@@ -33,6 +33,7 @@ public interface Serializer<NATIVE_TYPE, SERIALIZED_TYPE> {
 
 	/**
 	 * Serialize and transfer your object to {@link OutputStream}
+	 * The {@link OutputStream} is {@link OutputStream#flush()} inside this method, but {@link OutputStream#close()} outside
 	 *
 	 * @param objectToTransfer
 	 * @param outputStream

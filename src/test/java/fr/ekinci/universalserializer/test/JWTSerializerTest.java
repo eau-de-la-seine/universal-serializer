@@ -1,13 +1,14 @@
 package fr.ekinci.universalserializer.test;
 
 import fr.ekinci.universalserializer.format.text.jwt.JwtSerializer;
+import fr.ekinci.universalserializer.test.pojo.ComplexTestClass;
 import org.junit.Test;
 import fr.ekinci.universalserializer.format.text.jwt.Algorithm;
 import fr.ekinci.universalserializer.format.text.jwt.exception.JwtSerializerException;
 import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.exception.UnserializationException;
 
-import static fr.ekinci.universalserializer.test.TestClassUtils.*;
+import static fr.ekinci.universalserializer.test.utils.TestClassUtils.*;
 
 /**
  * A simple test of serialization and unserialization
@@ -28,6 +29,8 @@ public class JwtSerializerTest {
 
 			// VERIFY
 			ComplexTestClass generated = s.unserialize(ser);
+
+			// Test
 			compareComplexClassValues(origin, generated);
 		} catch (JwtSerializerException | SerializationException | UnserializationException e) {
 			e.printStackTrace();
