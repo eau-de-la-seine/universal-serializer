@@ -1,9 +1,17 @@
 package fr.ekinci.universalserializer.format.file;
 
 import fr.ekinci.universalserializer.Serializer;
+import fr.ekinci.universalserializer.exception.DeserializationException;
+import fr.ekinci.universalserializer.exception.SerializationException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -143,5 +151,42 @@ public abstract class AbstractFileSerializer<T> implements Serializer<List<T>, P
 		}
 
 		return fields;
+	}
+
+
+	public Path defaultSerialize(
+			List<T> objectToSerialize,
+			String destinationPath
+	) throws SerializationException {
+		try {
+			final Path path = (destinationPath != null) ?
+					Paths.get(destinationPath) :
+					Files.createTempFile(null, null, new FileAttribute[0]);
+
+			try (OutputStream outputStream = Files.newOutputStream(path)) {
+				sendTo(objectToSerialize, outputStream);
+			}
+
+			return path;
+		} catch (IOException e) {
+			throw new SerializationException(e);
+		}
+	}
+
+	public List<T> defaultDeserialize(
+			String destinationPath
+	) throws DeserializationException {
+		try {
+			final Path path = (destinationPath != null) ?
+					Paths.get(destinationPath) :
+					Files.createTempFile(null, null, new FileAttribute[0]);
+
+			try (InputStream inputStream = Files.newInputStream(path)) {
+				return receiveFrom(inputStream);
+			}
+
+		} catch (IOException e) {
+			throw new DeserializationException(e);
+		}
 	}
 }

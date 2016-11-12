@@ -1,22 +1,19 @@
 package fr.ekinci.universalserializer.format.file.excel;
 
 import fr.ekinci.universalserializer.exception.SerializationException;
-import fr.ekinci.universalserializer.format.file.FileSerializerUtils;
 import fr.ekinci.universalserializer.format.file.excel.exception.ExcelSerializerException;
-import fr.ekinci.universalserializer.exception.UnserializationException;
+import fr.ekinci.universalserializer.exception.DeserializationException;
 import fr.ekinci.universalserializer.format.file.AbstractFileSerializer;
 import fr.ekinci.universalserializer.format.file.FileOptions;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -106,19 +103,51 @@ public class ExcelSerializer<T> extends AbstractFileSerializer<T> {
 
 	@Override
 	public Path serialize(List<T> objectToSerialize) throws SerializationException {
-		return FileSerializerUtils.defaultSerialize(this, objectToSerialize, options.destinationPath());
+		return defaultSerialize(objectToSerialize, options.destinationPath());
 	}
 
 	@Override
-	public <USER_DEFINED_TYPE> USER_DEFINED_TYPE unserialize(Path objectToUnserialize) throws UnserializationException {
-		try (
-				InputStream inputStream = Files.newInputStream(objectToUnserialize);
-				Workbook workbook = getWoorkbookImpl(inputStream)
-		) {
+	public List<T> deserialize(Path objectToDeserialize) throws DeserializationException {
+		return defaultDeserialize(objectToDeserialize.toString());
+	}
+
+	@Override
+	public void sendTo(List<T> objectToSend, OutputStream outputStream) throws SerializationException {
+		try (Workbook wb = getWoorkbookImpl()) {
+			final Sheet sheet = wb.createSheet();
+			// handling header
+			if (options.hasHeader()) {
+				final Row headerRow = sheet.createRow(0);
+				for (int i = 0; i < nbColumns; i++) {
+					final Cell cell = headerRow.createCell(i);
+					cell.setCellValue(fileInfo.headerColumnNames()[i]);
+				}
+			}
+
+			final int headerFlag = (options.hasHeader()) ? 1 : 0;
+			final CellStyle dateFormatStyle = getDateFormatStyle(wb);
+			for (int i = 0, max = objectToSend.size(); i < max; i++) {
+				final Row row = sheet.createRow(i + headerFlag);
+				final T elementToTransfer = objectToSend.get(i);
+				for (int j = 0; j < nbColumns; j++) {
+					setCellValue(elementToTransfer, j, row.createCell(j), dateFormatStyle);
+				}
+			}
+
+			wb.write(outputStream);
+		} catch (IOException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+			throw new SerializationException(e);
+		}
+	}
+
+	@Override
+	public List<T> receiveFrom(InputStream inputStream) throws DeserializationException {
+		try {
+			final Workbook workbook = getWoorkbookImpl(inputStream);
 			final Sheet sheet = workbook.getSheetAt(options.sheetIndex());
 			final Iterator<Row> it = sheet.rowIterator();
 			final Method addToListMethod = List.class.getMethod("add", Object.class); // For performance issues, declare once
-			final USER_DEFINED_TYPE result = (USER_DEFINED_TYPE) new ArrayList<>();
+			final List<T> result = new ArrayList<>();
 
 			// handling header
 			if (options.hasHeader() && it.hasNext()) {
@@ -134,36 +163,7 @@ public class ExcelSerializer<T> extends AbstractFileSerializer<T> {
 			}
 			return result;
 		} catch (IOException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-			throw new UnserializationException(e);
-		}
-	}
-
-	@Override
-	public void transferTo(List<T> objectToTransfer, OutputStream outputStream) throws SerializationException {
-		try (Workbook wb = getWoorkbookImpl()) {
-			final Sheet sheet = wb.createSheet();
-			// handling header
-			if (options.hasHeader()) {
-				final Row headerRow = sheet.createRow(0);
-				for (int i = 0; i < nbColumns; i++) {
-					final Cell cell = headerRow.createCell(i);
-					cell.setCellValue(fileInfo.headerColumnNames()[i]);
-				}
-			}
-
-			final int headerFlag = (options.hasHeader()) ? 1 : 0;
-			final CellStyle dateFormatStyle = getDateFormatStyle(wb);
-			for (int i = 0, max = objectToTransfer.size(); i < max; i++) {
-				final Row row = sheet.createRow(i + headerFlag);
-				final T elementToTransfer = objectToTransfer.get(i);
-				for (int j = 0; j < nbColumns; j++) {
-					setCellValue(elementToTransfer, j, row.createCell(j), dateFormatStyle);
-				}
-			}
-
-			wb.write(outputStream);
-		} catch (IOException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-			throw new SerializationException(e);
+			throw new DeserializationException(e);
 		}
 	}
 

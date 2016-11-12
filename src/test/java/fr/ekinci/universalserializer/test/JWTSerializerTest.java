@@ -6,7 +6,7 @@ import org.junit.Test;
 import fr.ekinci.universalserializer.format.text.jwt.Algorithm;
 import fr.ekinci.universalserializer.format.text.jwt.exception.JwtSerializerException;
 import fr.ekinci.universalserializer.exception.SerializationException;
-import fr.ekinci.universalserializer.exception.UnserializationException;
+import fr.ekinci.universalserializer.exception.DeserializationException;
 
 import static fr.ekinci.universalserializer.test.utils.TestClassUtils.*;
 
@@ -21,18 +21,18 @@ public class JwtSerializerTest {
 	@Test
 	public void testSerializeAndUnserialize() {
 		try {
-			JwtSerializer s = new JwtSerializer(Algorithm.HS256, ComplexTestClass.class, SECRET);
+			JwtSerializer<ComplexTestClass> s = new JwtSerializer<>(Algorithm.HS256, ComplexTestClass.class, SECRET);
 			ComplexTestClass origin = instanciateAndInitializeComplexClass();
 
 			// SIGN
 			String ser = s.serialize(origin);
 
 			// VERIFY
-			ComplexTestClass generated = s.unserialize(ser);
+			ComplexTestClass generated = s.deserialize(ser);
 
 			// Test
 			compareComplexClassValues(origin, generated);
-		} catch (JwtSerializerException | SerializationException | UnserializationException e) {
+		} catch (JwtSerializerException | SerializationException | DeserializationException e) {
 			e.printStackTrace();
 		}
 	}

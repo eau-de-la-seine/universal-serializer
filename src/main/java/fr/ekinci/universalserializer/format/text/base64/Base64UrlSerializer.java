@@ -9,7 +9,7 @@ import java.util.Base64;
  *
  * @author Gokan EKINCI
  */
-public class Base64UrlSerializer extends AbstractBase64Serializer {
+public class Base64UrlSerializer<T> extends AbstractBase64Serializer<T> {
 
 	public Base64UrlSerializer() {
 		super(Base64.getUrlEncoder(), Base64.getUrlDecoder());

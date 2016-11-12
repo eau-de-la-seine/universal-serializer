@@ -2,7 +2,7 @@ package fr.ekinci.universalserializer.test;
 
 import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.format.file.excel.exception.ExcelSerializerException;
-import fr.ekinci.universalserializer.exception.UnserializationException;
+import fr.ekinci.universalserializer.exception.DeserializationException;
 import fr.ekinci.universalserializer.format.file.excel.ExcelSerializer;
 import fr.ekinci.universalserializer.test.pojo.ExcelFileTestClass;
 import org.junit.Test;
@@ -30,11 +30,11 @@ public class ExcelSerializerTest {
 			Path ser = s.serialize(origin);
 
 			// Unserialization
-			List<ExcelFileTestClass> generated = s.unserialize(ser);
+			List<ExcelFileTestClass> generated = s.deserialize(ser);
 
 			// Test
 			compareExcelFileClassValues(origin, generated);
-		} catch (ExcelSerializerException | SerializationException | UnserializationException e) {
+		} catch (ExcelSerializerException | SerializationException | DeserializationException e) {
 			e.printStackTrace();
 		}
 	}

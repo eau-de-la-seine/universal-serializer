@@ -1,7 +1,7 @@
 package fr.ekinci.universalserializer.test;
 
 import fr.ekinci.universalserializer.exception.SerializationException;
-import fr.ekinci.universalserializer.exception.UnserializationException;
+import fr.ekinci.universalserializer.exception.DeserializationException;
 import fr.ekinci.universalserializer.format.text.xml.XmlSerializer;
 import fr.ekinci.universalserializer.test.pojo.ComplexTestClass;
 import org.junit.Test;
@@ -18,7 +18,7 @@ public class XmlSerializerTest {
 
 	@Test
 	public void testSerializeAndUnserialize() {
-		XmlSerializer s = new XmlSerializer(ComplexTestClass.class);
+		XmlSerializer<ComplexTestClass> s = new XmlSerializer<>(ComplexTestClass.class);
 		ComplexTestClass origin = instanciateAndInitializeComplexClass();
 
 		try {
@@ -26,11 +26,11 @@ public class XmlSerializerTest {
 			String ser = s.serialize(origin);
 
 			// Unserialization
-			ComplexTestClass generated = s.unserialize(ser);
+			ComplexTestClass generated = s.deserialize(ser);
 
 			// Test
 			compareComplexClassValues(origin, generated);
-		} catch (SerializationException | UnserializationException e) {
+		} catch (SerializationException | DeserializationException e) {
 			e.printStackTrace();
 		}
 	}

@@ -2,11 +2,10 @@ package fr.ekinci.universalserializer.format.text.base64;
 
 import java.io.*;
 import java.util.Base64;
-
-import fr.ekinci.universalserializer.Serializer;
-import fr.ekinci.universalserializer.format.text.StringSerializerUtils;
+import fr.ekinci.universalserializer.format.binary.java.JavaSerializer;
 import fr.ekinci.universalserializer.exception.SerializationException;
-import fr.ekinci.universalserializer.exception.UnserializationException;
+import fr.ekinci.universalserializer.exception.DeserializationException;
+import fr.ekinci.universalserializer.format.text.AbstractStringSerializer;
 
 /**
  * A little strategy pattern applied for base64 serialization
@@ -15,42 +14,34 @@ import fr.ekinci.universalserializer.exception.UnserializationException;
  *
  * @author Gokan EKINCI
  */
-public abstract class AbstractBase64Serializer implements Serializer<Object, String> {
-	protected Base64.Encoder encoder;
-	protected Base64.Decoder decoder;
+public abstract class AbstractBase64Serializer<T> extends AbstractStringSerializer<T> {
+	protected final Base64.Encoder encoder;
+	protected final Base64.Decoder decoder;
+	protected final JavaSerializer<T> javaSerializer;
 
 	public AbstractBase64Serializer(Base64.Encoder encoder, Base64.Decoder decoder) {
+		this.javaSerializer = new JavaSerializer<>();
 		this.encoder = encoder;
 		this.decoder = decoder;
 	}
 
 	@Override
-	public String serialize(Object objectToSerialize) throws SerializationException {
-		try (
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(baos)
-		) {
-			oos.writeObject(objectToSerialize);
-			return encoder.encodeToString(baos.toByteArray());
-		} catch (IOException e) {
-			throw new SerializationException(e);
-		}
+	public String serialize(T objectToSerialize) throws SerializationException {
+		return encoder.encodeToString(javaSerializer.serialize(objectToSerialize));
 	}
 
 	@Override
-	public <J> J unserialize(String objectToUnserialize) throws UnserializationException {
-		try (
-				ByteArrayInputStream bais = new ByteArrayInputStream(decoder.decode(objectToUnserialize));
-				ObjectInputStream ois = new ObjectInputStream(bais)
-		) {
-			return (J) ois.readObject();
-		} catch (IOException | ClassNotFoundException e) {
-			throw new UnserializationException(e);
-		}
+	public T deserialize(String objectToDeserialize) throws DeserializationException {
+		return javaSerializer.deserialize(decoder.decode(objectToDeserialize));
 	}
 
 	@Override
-	public void transferTo(Object objectToTransfer, OutputStream outputStream) throws SerializationException {
-		StringSerializerUtils.defaultTransferTo(this, objectToTransfer, outputStream);
+	public void sendTo(T objectToSend, OutputStream outputStream) throws SerializationException {
+		defaultSendTo(objectToSend, outputStream);
+	}
+
+	@Override
+	public T receiveFrom(InputStream inputStream) throws DeserializationException {
+		return defaultReceiveFrom(inputStream);
 	}
 }

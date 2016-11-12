@@ -1,17 +1,12 @@
 package fr.ekinci.universalserializer.format.file.csv;
 
 import fr.ekinci.universalserializer.exception.SerializationException;
-import fr.ekinci.universalserializer.exception.UnserializationException;
+import fr.ekinci.universalserializer.exception.DeserializationException;
 import fr.ekinci.universalserializer.format.file.AbstractFileSerializer;
 import fr.ekinci.universalserializer.format.file.FileOptions;
-import fr.ekinci.universalserializer.format.file.FileSerializerUtils;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -69,16 +64,56 @@ public class CsvSerializer<T> extends AbstractFileSerializer<T> {
 
 	@Override
 	public Path serialize(List<T> objectToSerialize) throws SerializationException {
-		return FileSerializerUtils.defaultSerialize(this, objectToSerialize, options.destinationPath());
+		return this.defaultSerialize(objectToSerialize, options.destinationPath());
 	}
 
 	@Override
-	public <USER_DEFINED_TYPE> USER_DEFINED_TYPE unserialize(Path objectToUnserialize) throws UnserializationException {
-		final USER_DEFINED_TYPE result = (USER_DEFINED_TYPE) new ArrayList<>();
+	public List<T> deserialize(Path objectToDeserialize) throws DeserializationException {
+		return this.defaultDeserialize(objectToDeserialize.toString());
+	}
 
-		try (BufferedReader reader = Files.newBufferedReader(objectToUnserialize)) {
-			final Method addToListMethod = List.class.getMethod("add", Object.class); // For performance issues, declare once
+	/**
+	 * We won't close {@link PrintStream} or {@link CSVPrinter} because they close the outputStream
+	 *
+	 * @param objectToSend
+	 * @param outputStream
+	 * @throws SerializationException
+	 */
+	@Override
+	public void sendTo(List<T> objectToSend, OutputStream outputStream) throws SerializationException {
+		try {
+			// This outputStream/printStream is closed "outside"
+			final CSVPrinter csvPrinter = options.csvFormat().print(new PrintStream(outputStream));
+
+			// handling header
+			if (options.hasHeader()) {
+				csvPrinter.printRecord(fileInfo.headerColumnNames());
+			}
+
+			for (T tuple : objectToSend) {
+				final String[] values = new String[nbColumns];
+				for (int i = 0; i < nbColumns; i++) {
+					final Field field = requiredFields.get(i);
+					values[i] = objectToString(field.get(tuple), field);
+				}
+				csvPrinter.printRecord(values);
+			}
+
+			// Flush the printStream
+			csvPrinter.flush();
+		} catch (IOException  | IllegalAccessException e) {
+			throw new SerializationException(e);
+		}
+	}
+
+	@Override
+	public List<T> receiveFrom(InputStream inputStream) throws DeserializationException {
+		try {
+			// This inputStream/reader is closed "outside"
+			final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 			final Iterator<CSVRecord> iterator = options.csvFormat().parse(reader).iterator();
+			final List<T> result = new ArrayList<>();
+			final Method addToListMethod = List.class.getMethod("add", Object.class); // For performance issues, declare once
 
 			// handling header
 			if (options.hasHeader() && iterator.hasNext()) {
@@ -94,43 +129,9 @@ public class CsvSerializer<T> extends AbstractFileSerializer<T> {
 				addToListMethod.invoke(result, tuple);
 			}
 
+			return result;
 		} catch (IOException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException | ParseException e) {
-			throw new UnserializationException(e);
-		}
-
-		return result;
-	}
-
-	/**
-	 * We won't close {@link PrintStream} or {@link CSVPrinter} because they close the outputStream
-	 *
-	 * @param objectToTransfer
-	 * @param outputStream
-	 * @throws SerializationException
-	 */
-	@Override
-	public void transferTo(List<T> objectToTransfer, OutputStream outputStream) throws SerializationException {
-		try {
-			final CSVPrinter csvPrinter = options.csvFormat().print(new PrintStream(outputStream));
-
-			// handling header
-			if (options.hasHeader()) {
-				csvPrinter.printRecord(fileInfo.headerColumnNames());
-			}
-
-			for (T tuple : objectToTransfer) {
-				final String[] values = new String[nbColumns];
-				for (int i = 0; i < nbColumns; i++) {
-					final Field field = requiredFields.get(i);
-					values[i] = objectToString(field.get(tuple), field);
-				}
-				csvPrinter.printRecord(values);
-			}
-
-			// Flush the printStream
-			csvPrinter.flush();
-		} catch (IOException  | IllegalAccessException e) {
-			throw new SerializationException(e);
+			throw new DeserializationException(e);
 		}
 	}
 

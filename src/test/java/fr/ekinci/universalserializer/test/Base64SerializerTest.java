@@ -3,7 +3,7 @@ package fr.ekinci.universalserializer.test;
 import fr.ekinci.universalserializer.format.text.base64.AbstractBase64Serializer;
 import fr.ekinci.universalserializer.format.text.base64.Base64Serializer;
 import fr.ekinci.universalserializer.exception.SerializationException;
-import fr.ekinci.universalserializer.exception.UnserializationException;
+import fr.ekinci.universalserializer.exception.DeserializationException;
 import fr.ekinci.universalserializer.test.pojo.ComplexTestClass;
 import org.junit.Test;
 
@@ -18,7 +18,7 @@ public class Base64SerializerTest {
 
 	@Test
 	public void testSerializeAndUnserialize() {
-		AbstractBase64Serializer s = new Base64Serializer();
+		AbstractBase64Serializer<ComplexTestClass> s = new Base64Serializer<>();
 		ComplexTestClass origin = instanciateAndInitializeComplexClass();
 
 		try {
@@ -26,11 +26,11 @@ public class Base64SerializerTest {
 			String ser = s.serialize(origin);
 
 			// Unserialization
-			ComplexTestClass generated = s.unserialize(ser);
+			ComplexTestClass generated = s.deserialize(ser);
 
 			// Test
 			compareComplexClassValues(origin, generated);
-		} catch (SerializationException | UnserializationException e) {
+		} catch (SerializationException | DeserializationException e) {
 			e.printStackTrace();
 		}
 	}

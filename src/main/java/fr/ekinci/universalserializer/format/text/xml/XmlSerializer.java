@@ -1,5 +1,6 @@
 package fr.ekinci.universalserializer.format.text.xml;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -7,7 +8,7 @@ import javax.xml.bind.JAXB;
 
 import fr.ekinci.universalserializer.Serializer;
 import fr.ekinci.universalserializer.exception.SerializationException;
-import fr.ekinci.universalserializer.exception.UnserializationException;
+import fr.ekinci.universalserializer.exception.DeserializationException;
 
 /**
  * XML serializer (It use JAXB)
@@ -17,16 +18,16 @@ import fr.ekinci.universalserializer.exception.UnserializationException;
  *
  * @author Gokan EKINCI
  */
-public class XmlSerializer implements Serializer<Object, String> {
+public class XmlSerializer<T> implements Serializer<T, String> {
 	// This attribute is used for unmarshaling
-	private Class<?> objectType;
+	private Class<T> objectType;
 
-	public XmlSerializer(Class<?> objectType){
+	public XmlSerializer(Class<T> objectType){
 		this.objectType = objectType;
 	}
 
 	@Override
-	public String serialize(Object objectToSerialize) throws SerializationException {
+	public String serialize(T objectToSerialize) throws SerializationException {
 		try(StringWriter sw = new StringWriter()){
 			JAXB.marshal(objectToSerialize, sw);
 			return sw.toString();
@@ -36,20 +37,29 @@ public class XmlSerializer implements Serializer<Object, String> {
 	}
 
 	@Override
-	public <J> J unserialize(String objectToUnserialize) throws UnserializationException {
-		try(StringReader reader = new StringReader(objectToUnserialize)){
-			return (J) JAXB.unmarshal(reader, objectType);
+	public T deserialize(String objectToDeserialize) throws DeserializationException {
+		try(StringReader reader = new StringReader(objectToDeserialize)){
+			return JAXB.unmarshal(reader, objectType);
 		} catch (Exception e) {
-			throw new UnserializationException(e);
+			throw new DeserializationException(e);
 		}
 	}
 
 	@Override
-	public void transferTo(Object objectToTransfer, OutputStream outputStream) throws SerializationException {
+	public void sendTo(T objectToSend, OutputStream outputStream) throws SerializationException {
 		try {
-			JAXB.marshal(objectToTransfer, outputStream);
+			JAXB.marshal(objectToSend, outputStream);
 		} catch (Exception e) {
 			throw new SerializationException(e);
+		}
+	}
+
+	@Override
+	public T receiveFrom(InputStream inputStream) throws DeserializationException {
+		try {
+			return JAXB.unmarshal(inputStream, objectType);
+		} catch (Exception e) {
+			throw new DeserializationException(e);
 		}
 	}
 }

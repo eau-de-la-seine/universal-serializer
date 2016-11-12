@@ -4,7 +4,7 @@ import java.io.*;
 
 import fr.ekinci.universalserializer.Serializer;
 import fr.ekinci.universalserializer.exception.SerializationException;
-import fr.ekinci.universalserializer.exception.UnserializationException;
+import fr.ekinci.universalserializer.exception.DeserializationException;
 
 
 /**
@@ -12,17 +12,17 @@ import fr.ekinci.universalserializer.exception.UnserializationException;
  *
  * Your implementation class must implements {@link java.io.Serializable}
  *
- * Note that USER_DEFINED_TYPE does not extends from Serializable, because
+ * Note that T does not extends from Serializable, because
  * you can use a type (like the {@link java.util.List} interface) which
  * is not Serializable at compile time but its
  * implementation (like {@link java.util.ArrayList} class) is serializable at runtime.
  *
  * @author Gokan EKINCI
  */
-public class JavaSerializer implements Serializer<Object, byte[]> {
+public class JavaSerializer<T> implements Serializer<T, byte[]> {
 
 	@Override
-	public byte[] serialize(Object objectToSerialize) throws SerializationException {
+	public byte[] serialize(T objectToSerialize) throws SerializationException {
 		try (
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(baos)
@@ -35,25 +35,35 @@ public class JavaSerializer implements Serializer<Object, byte[]> {
 	}
 
 	@Override
-	public <USER_DEFINED_TYPE> USER_DEFINED_TYPE unserialize(byte[] objectToUnserialize) throws UnserializationException {
+	public T deserialize(byte[] objectToDeserialize) throws DeserializationException {
 		try (
-				ByteArrayInputStream bais = new ByteArrayInputStream(objectToUnserialize);
+				ByteArrayInputStream bais = new ByteArrayInputStream(objectToDeserialize);
 				ObjectInputStream ois = new ObjectInputStream(bais)
 		) {
-			return (USER_DEFINED_TYPE) ois.readObject();
+			return (T) ois.readObject();
 		} catch (IOException | ClassNotFoundException e) {
-			throw new UnserializationException(e);
+			throw new DeserializationException(e);
 		}
 	}
 
 	@Override
-	public void transferTo(Object objectToTransfer, OutputStream outputStream) throws SerializationException {
+	public void sendTo(T objectToSend, OutputStream outputStream) throws SerializationException {
 		try {
 			final ObjectOutputStream oos = new ObjectOutputStream(outputStream);
-			oos.writeObject(objectToTransfer);
+			oos.writeObject(objectToSend);
 			oos.flush();
 		} catch (IOException e) {
 			throw new SerializationException(e);
+		}
+	}
+
+	@Override
+	public T receiveFrom(InputStream inputStream) throws DeserializationException {
+		try {
+			final ObjectInputStream ois = new ObjectInputStream(inputStream);
+			return (T) ois.readObject();
+		} catch (IOException | ClassNotFoundException e) {
+			throw new DeserializationException(e);
 		}
 	}
 }

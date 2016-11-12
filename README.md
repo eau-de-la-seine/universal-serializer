@@ -22,8 +22,9 @@ Text:
 All implementation classes inherit from the `Serializer` interface, this interface has the following methods :
 
 * `serialize(X myObject) : Y` : For serializing your object to \[ binary | text | file \] data format
-* `unserialize(Y mySerializedData) : X` : For unserializing your serialized data to Java object
-* `transferTo(X myObject, OutputStream o) : void` : For serializing and sending your data to an output stream (over network)
+* `deserialize(Y mySerializedData) : X` : For deserializing your serialized data to Java object
+* `sendTo(X myObject, OutputStream out) : void` : For serializing and sending your data through output stream (useful over network)
+* `receiveFrom(InputStream in) : Y` : For deserializing object received through input stream (useful over network)
 
 
 
@@ -51,43 +52,43 @@ You have builder pattern based `FileOptions` class in order to specify your :
 
 ### Base64 and Base64 Url serialization
 
-    AbstractBase64Serializer s = new Base64Serializer(); // OR new Base64UrlSerializer();
+    AbstractBase64Serializer<MyClass> s = new Base64Serializer<>(); // OR new Base64UrlSerializer<>();
     String base64String = s.serialize(new MyClass(/* init */));
-    MyClass unserialized = s.unserialize(base64String);
+    MyClass deserialized = s.deserialize(base64String);
 
 
 ### CSV serialization
 
     CSVSerializer<MyClass> s = new CSVSerializer<>(MyClass.class /* , your FileOptions */);
     Path path = s.serialize(new ArrayList<MyClass>());
-    List<MyClass> unserialized = s.unserialize(path);
+    List<MyClass> deserialized = s.deserialize(path);
 
 
 ### Excel serialization
 
     ExcelSerializer<MyClass> s = new ExcelSerializer<>(MyClass.class /* , your FileOptions */);
     Path path = s.serialize(new ArrayList<MyClass>());
-    List<MyClass> unserialized = s.unserialize(path);
+    List<MyClass> deserialized = s.deserialize(path);
 
 
 ### Java serialization  
 
-    JavaSerializer s = new JavaSerializer();
+    JavaSerializer<MyClass> s = new JavaSerializer<>();
     byte[] byteArray = s.serialize(new MyClass(/* init */));
-    MyClass unserialized = s.unserialize(byteArray);
+    MyClass deserialized = s.deserialize(byteArray);
 
 
 ### JWT (JSON Web Token) serialization  
 
     String SECRET = "546T78UINqqsvfzfs<vs<sdv_-('U87Y89YG87";
-    JwtSerializer s = new JwtSerializer(Algorithm.HS256, MyClassClass.class, SECRET);
+    JwtSerializer<MyClass> s = new JwtSerializer<>(Algorithm.HS256, MyClassClass.class, SECRET);
     String jsonWebToken = s.serialize(new MyClass(/* init */));
-    MyClass unserialized = s.unserialize(jsonWebToken);
+    MyClass deserialized = s.deserialize(jsonWebToken);
 
 
 ### XML serialization
 
-    XmlSerializer s = new XmlSerializer(MyClass.class);
+    XmlSerializer<MyClass> s = new XmlSerializer<>(MyClass.class);
     String xmlString = s.serialize(new MyClass(/* init */));
-    MyClass unserialized = s.unserialize(xmlString);
+    MyClass deserialized = s.deserialize(xmlString);
 

@@ -1,7 +1,9 @@
 package fr.ekinci.universalserializer;
 
 import fr.ekinci.universalserializer.exception.SerializationException;
-import fr.ekinci.universalserializer.exception.UnserializationException;
+import fr.ekinci.universalserializer.exception.DeserializationException;
+
+import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
@@ -22,22 +24,31 @@ public interface Serializer<NATIVE_TYPE, SERIALIZED_TYPE> {
 	SERIALIZED_TYPE serialize(NATIVE_TYPE objectToSerialize) throws SerializationException;
 
 	/**
-	 * Unserialize your object
+	 * Deserialize your object
 	 *
-	 * @param objectToUnserialize
-	 * @param <USER_DEFINED_TYPE>
+	 * @param objectToDeserialize
 	 * @return
-	 * @throws UnserializationException
+	 * @throws DeserializationException
 	 */
-	<USER_DEFINED_TYPE> USER_DEFINED_TYPE unserialize(SERIALIZED_TYPE objectToUnserialize) throws UnserializationException;
+	NATIVE_TYPE deserialize(SERIALIZED_TYPE objectToDeserialize) throws DeserializationException;
 
 	/**
-	 * Serialize and transfer your object to {@link OutputStream}
+	 * Serialize and send your object to {@link OutputStream}
 	 * The {@link OutputStream} is {@link OutputStream#flush()} inside this method, but {@link OutputStream#close()} outside
 	 *
-	 * @param objectToTransfer
+	 * @param objectToSend
 	 * @param outputStream
 	 * @throws SerializationException
 	 */
-	void transferTo(NATIVE_TYPE objectToTransfer, OutputStream outputStream) throws SerializationException;
+	void sendTo(NATIVE_TYPE objectToSend, OutputStream outputStream) throws SerializationException;
+
+	/**
+	 * Receive {@link InputStream} and deserialize it to native typed object
+	 * The {@link InputStream} is {@link InputStream#close()} outside
+	 *
+	 * @param inputStream
+	 * @return
+	 * @throws DeserializationException
+	 */
+	NATIVE_TYPE receiveFrom(InputStream inputStream) throws DeserializationException;
 }

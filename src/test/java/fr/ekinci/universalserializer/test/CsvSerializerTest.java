@@ -1,7 +1,7 @@
 package fr.ekinci.universalserializer.test;
 
 import fr.ekinci.universalserializer.exception.SerializationException;
-import fr.ekinci.universalserializer.exception.UnserializationException;
+import fr.ekinci.universalserializer.exception.DeserializationException;
 import fr.ekinci.universalserializer.format.file.csv.CsvSerializer;
 import fr.ekinci.universalserializer.test.pojo.CsvFileTestClass;
 import org.junit.Test;
@@ -28,11 +28,11 @@ public class CsvSerializerTest {
 			Path ser = s.serialize(origin);
 
 			// Unserialization
-			List<CsvFileTestClass> generated = s.unserialize(ser);
+			List<CsvFileTestClass> generated = s.deserialize(ser);
 
 			// Test
 			compareCsvFileClassValues(origin, generated);
-		} catch (SerializationException | UnserializationException e) {
+		} catch (SerializationException | DeserializationException e) {
 			e.printStackTrace();
 		}
 	}

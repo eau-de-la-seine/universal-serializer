@@ -1,5 +1,6 @@
 package fr.ekinci.universalserializer.format.text.jwt;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.security.InvalidKeyException;
@@ -12,12 +13,11 @@ import java.util.Objects;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import com.google.gson.Gson;
-import fr.ekinci.universalserializer.Serializer;
-import fr.ekinci.universalserializer.format.text.StringSerializerUtils;
+import fr.ekinci.universalserializer.format.text.AbstractStringSerializer;
 import fr.ekinci.universalserializer.exception.SerializationException;
-import fr.ekinci.universalserializer.exception.UnserializationException;
+import fr.ekinci.universalserializer.exception.DeserializationException;
 import fr.ekinci.universalserializer.format.text.jwt.exception.JwtSerializerException;
-import fr.ekinci.universalserializer.format.text.jwt.exception.SignatureUnserializationException;
+import fr.ekinci.universalserializer.format.text.jwt.exception.SignatureDeserializationException;
 
 /**
  * JWT serializer
@@ -27,7 +27,7 @@ import fr.ekinci.universalserializer.format.text.jwt.exception.SignatureUnserial
  *
  * @author Gokan EKINCI
  */
-public class JwtSerializer implements Serializer<Object, String> {
+public class JwtSerializer<T> extends AbstractStringSerializer<T> {
 	// private final static String ENCODING = "UTF-8"; => use this for getBytes() ?
 	private final Mac mac;
 	private final String jsonHeader;
@@ -64,16 +64,16 @@ public class JwtSerializer implements Serializer<Object, String> {
 	 * => base64Url(header).base64Url(payload).base64Url(hmac(base64Url(header).base64Url(payload), secret))
 	 */
 	@Override
-	public String serialize(Object payloadObject) throws SerializationException {
+	public String serialize(T payloadObject) throws SerializationException {
 		Objects.requireNonNull(payloadObject, "payloadObject must not be null");
 
-		Base64.Encoder encoder = Base64.getUrlEncoder();
-		String base64UrlEncodedHeader = encoder.encodeToString(jsonHeader.getBytes());
-		String base64UrlEncodedPayload = encoder.encodeToString(gson.toJson(payloadObject).getBytes());
+		final Base64.Encoder encoder = Base64.getUrlEncoder();
+		final String base64UrlEncodedHeader = encoder.encodeToString(jsonHeader.getBytes());
+		final String base64UrlEncodedPayload = encoder.encodeToString(gson.toJson(payloadObject).getBytes());
 
 		// Sign
-		byte[] signature = hmac((base64UrlEncodedHeader + "." + base64UrlEncodedPayload).getBytes());
-		String base64UrlEncodedSignature = encoder.encodeToString(signature);
+		final byte[] signature = hmac((base64UrlEncodedHeader + "." + base64UrlEncodedPayload).getBytes());
+		final String base64UrlEncodedSignature = encoder.encodeToString(signature);
 
 		return base64UrlEncodedHeader + "." + base64UrlEncodedPayload + "." + base64UrlEncodedSignature;
 	}
@@ -82,30 +82,34 @@ public class JwtSerializer implements Serializer<Object, String> {
 	 * VERIFY
 	 */
 	@Override
-	public <J> J unserialize(String jsonWebToken) throws UnserializationException {
-		Objects.requireNonNull(jsonWebToken, "jsonWebToken must not be null");
+	public T deserialize(String objectToDeserialize) throws DeserializationException {
+		Objects.requireNonNull(objectToDeserialize, "jsonWebToken must not be null");
 
-		String[] parts = jsonWebToken.split("\\.");
-		System.out.println("parts.length: " + parts.length);
+		final String[] parts = objectToDeserialize.split("\\.");
 		if (parts.length != 3) {
-			throw new UnserializationException("jsonWebToken must respect `header.payload.secret` format");
+			throw new DeserializationException("jsonWebToken must respect `header.payload.secret` format");
 		}
 
 		// Verify
-		Base64.Decoder decoder = Base64.getUrlDecoder();
-		byte[] leftSideSignature = hmac((parts[0] + "." + parts[1]).getBytes()); // Reconstitution
-		byte[] rightSideSignature = decoder.decode(parts[2]);
+		final Base64.Decoder decoder = Base64.getUrlDecoder();
+		final byte[] leftSideSignature = hmac((parts[0] + "." + parts[1]).getBytes()); // Reconstitution
+		final byte[] rightSideSignature = decoder.decode(parts[2]);
 		if (!MessageDigest.isEqual(leftSideSignature, rightSideSignature)) {
-			throw new SignatureUnserializationException("Wrong signature during unserialization");
+			throw new SignatureDeserializationException("Wrong signature during unserialization");
 		}
 
-		String decodedPayload = new String(decoder.decode(parts[1]));
+		final String decodedPayload = new String(decoder.decode(parts[1]));
 		return gson.fromJson(decodedPayload, payloadType);
 	}
 
 	@Override
-	public void transferTo(Object objectToTransfer, OutputStream outputStream) throws SerializationException {
-		StringSerializerUtils.defaultTransferTo(this, objectToTransfer, outputStream);
+	public void sendTo(T objectToSend, OutputStream outputStream) throws SerializationException {
+		defaultSendTo(objectToSend, outputStream);
+	}
+
+	@Override
+	public T receiveFrom(InputStream inputStream) throws DeserializationException {
+		return defaultReceiveFrom(inputStream);
 	}
 
 	/**
