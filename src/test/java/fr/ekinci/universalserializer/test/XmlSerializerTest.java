@@ -10,14 +10,14 @@ import static fr.ekinci.universalserializer.test.utils.TestClassUtils.compareCom
 import static fr.ekinci.universalserializer.test.utils.TestClassUtils.instanciateAndInitializeComplexClass;
 
 /**
- * A simple test of serialization and unserialization
+ * A simple test of serialization and deserialization
  *
  * @author Gokan EKINCI
  */
 public class XmlSerializerTest {
 
 	@Test
-	public void testSerializeAndUnserialize() {
+	public void testSerializeAndDeserialize() {
 		XmlSerializer<ComplexTestClass> s = new XmlSerializer<>(ComplexTestClass.class);
 		ComplexTestClass origin = instanciateAndInitializeComplexClass();
 

@@ -12,14 +12,14 @@ import java.util.List;
 import static fr.ekinci.universalserializer.test.utils.TestClassUtils.*;
 
 /**
- * A simple test of serialization and unserialization
+ * A simple test of serialization and deserialization
  *
  * @author Gokan EKINCI
  */
 public class ExcelSerializerTest {
 
 	@Test
-	public void testSerializeAndUnserialize() {
+	public void testSerializeAndDeserialize() {
 		ExcelFileTestClass element = instanciateAndInitializeExcelFileClass();
 		List<ExcelFileTestClass> origin = Arrays.asList(element, element, element, element, element);
 

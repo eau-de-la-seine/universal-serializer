@@ -12,12 +12,14 @@ import static fr.ekinci.universalserializer.test.utils.TestClassUtils.*;
 
 
 /**
+ * A simple test of serialization and deserialization
+ *
  * @author Gokan EKINCI
  */
 public class CsvSerializerTest {
 
 	@Test
-	public void testSerializeAndUnserialize() {
+	public void testSerializeAndDeserialize() {
 		CsvFileTestClass element = instanciateAndInitializeCsvFileClass();
 		List<CsvFileTestClass> origin = Arrays.asList(element, element, element, element, element);
 

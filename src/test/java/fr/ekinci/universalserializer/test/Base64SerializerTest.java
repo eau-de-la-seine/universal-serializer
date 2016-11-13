@@ -10,14 +10,14 @@ import org.junit.Test;
 import static fr.ekinci.universalserializer.test.utils.TestClassUtils.*;
 
 /**
- * A simple test of serialization and unserialization
+ * A simple test of serialization and deserialization
  *
  * @author Gokan EKINCI
  */
 public class Base64SerializerTest {
 
 	@Test
-	public void testSerializeAndUnserialize() {
+	public void testSerializeAndDeserialize() {
 		AbstractBase64Serializer<ComplexTestClass> s = new Base64Serializer<>();
 		ComplexTestClass origin = instanciateAndInitializeComplexClass();
 

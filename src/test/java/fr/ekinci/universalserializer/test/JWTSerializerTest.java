@@ -11,7 +11,7 @@ import fr.ekinci.universalserializer.exception.DeserializationException;
 import static fr.ekinci.universalserializer.test.utils.TestClassUtils.*;
 
 /**
- * A simple test of serialization and unserialization
+ * A simple test of serialization and deserialization
  *
  * @author Gokan EKINCI
  */
@@ -19,7 +19,7 @@ public class JwtSerializerTest {
 	public final static String SECRET = "546T78UINqqsvfzfs<vs<sdv_-('U87Y89YG87";
 
 	@Test
-	public void testSerializeAndUnserialize() {
+	public void testSerializeAndDeserialize() {
 		try {
 			JwtSerializer<ComplexTestClass> s = new JwtSerializer<>(Algorithm.HS256, ComplexTestClass.class, SECRET);
 			ComplexTestClass origin = instanciateAndInitializeComplexClass();

@@ -9,14 +9,14 @@ import fr.ekinci.universalserializer.exception.DeserializationException;
 import static fr.ekinci.universalserializer.test.utils.TestClassUtils.*;
 
 /**
- * A simple test of serialization and unserialization
+ * A simple test of serialization and deserialization
  *
  * @author Gokan EKINCI
  */
 public class JavaSerializerTest {
 
 	@Test
-	public void testSerializeAndUnserialize() {
+	public void testSerializeAndDeserialize() {
 		JavaSerializer<ComplexTestClass> s = new JavaSerializer<>();
 		ComplexTestClass origin = instanciateAndInitializeComplexClass();
 

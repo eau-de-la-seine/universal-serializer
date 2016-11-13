@@ -6,20 +6,21 @@ A serialization project for transforming Java objects to another format
 
 Binary:
 * Java
+* Google Protocol Buffers
 
 File:
 * CSV
 * Excel
 
 Text:
-* Base 64
+* Base64 and Base64 Url
 * JWT
 * XML
 
 
 ## API
 
-All implementation classes inherit from the `Serializer` interface, this interface has the following methods :
+All implementation classes inherit from the `Serializer` interface, this common interface has the following methods :
 
 * `serialize(X myObject) : Y` : For serializing your object to \[ binary | text | file \] data format
 * `deserialize(Y mySerializedData) : X` : For deserializing your serialized data to Java object
@@ -70,6 +71,11 @@ You have builder pattern based `FileOptions` class in order to specify your :
     Path path = s.serialize(new ArrayList<MyClass>());
     List<MyClass> deserialized = s.deserialize(path);
 
+### Google Protocol Buffers serialization
+
+    ProtobufSerializer<MyClass> s = new ProtobufSerializer<>(MyClass.class);
+    byte[] byteArray = s.serialize(MyClass.newBuilder().build());
+    MyClass deserialized = s.deserialize(byteArray);
 
 ### Java serialization  
 

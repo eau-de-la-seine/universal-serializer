@@ -11,6 +11,7 @@
 		<junit.version>4.12</junit.version>
 		<apache-poi.version>3.15</apache-poi.version>
 		<apache-commons-csv.version>1.4</apache-commons-csv.version>
+		<protobuf-java.version>3.1.0</protobuf-java.version>
 		<maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
 	</properties>
 
@@ -34,6 +35,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>
 			<version>${apache-commons-csv.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>${protobuf-java.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
