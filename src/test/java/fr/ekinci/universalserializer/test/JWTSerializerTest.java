@@ -21,7 +21,7 @@ public class JwtSerializerTest {
 	@Test
 	public void testSerializeAndDeserialize() {
 		try {
-			JwtSerializer<ComplexTestClass> s = new JwtSerializer<>(Algorithm.HS256, ComplexTestClass.class, SECRET);
+			JwtSerializer<ComplexTestClass> s = new JwtSerializer<>(ComplexTestClass.class, Algorithm.HS256, SECRET);
 			ComplexTestClass origin = instanciateAndInitializeComplexClass();
 
 			// SIGN

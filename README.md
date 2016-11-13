@@ -87,7 +87,7 @@ You have builder pattern based `FileOptions` class in order to specify your :
 ### JWT (JSON Web Token) serialization  
 
     String SECRET = "546T78UINqqsvfzfs<vs<sdv_-('U87Y89YG87";
-    JwtSerializer<MyClass> s = new JwtSerializer<>(Algorithm.HS256, MyClassClass.class, SECRET);
+    JwtSerializer<MyClass> s = new JwtSerializer<>(MyClass.class, Algorithm.HS256, SECRET);
     String jsonWebToken = s.serialize(new MyClass(/* init */));
     MyClass deserialized = s.deserialize(jsonWebToken);
 

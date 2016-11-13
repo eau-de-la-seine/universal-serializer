@@ -34,7 +34,7 @@ public class JwtSerializer<T> extends AbstractStringSerializer<T> {
 	private final Gson gson = new Gson();
 	private final Type payloadType;
 
-	public JwtSerializer(String algorithm, Type payloadType, String secret) throws JwtSerializerException {
+	public JwtSerializer(Type payloadType, String algorithm, String secret) throws JwtSerializerException {
 		if (algorithm == null || payloadType == null || secret == null) {
 			throw new IllegalArgumentException("Parameters in JwtSerializer's constructor must not be null");
 		}
