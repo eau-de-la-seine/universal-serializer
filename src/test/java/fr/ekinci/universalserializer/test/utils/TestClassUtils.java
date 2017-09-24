@@ -27,7 +27,7 @@ public class TestClassUtils {
 		obj.setAttr6(6d);
 		obj.setAttr7(true);
 		obj.setAttr8('8');
-		obj.setAttr9("9");
+		obj.setAttr9("&é'(-è_çà)=€$");
 		return obj;
 	}
 
@@ -41,7 +41,7 @@ public class TestClassUtils {
 		obj.setAttr6(6d);
 		obj.setAttr7(true);
 		obj.setAttr8('8');
-		obj.setAttr9("9");
+		obj.setAttr9("&é'(-è_çà)=€$");
 
 		// Complex attributes initialization
 		obj.setAttr10(new ArrayList<Double>() {{
@@ -69,7 +69,7 @@ public class TestClassUtils {
 
 	public static ExcelFileTestClass instanciateAndInitializeExcelFileClass() {
 		final ExcelFileTestClass obj = new ExcelFileTestClass();
-		obj.setAttr0("0");
+		obj.setAttr0("&é'(-è_çà)=€$");
 		obj.setAttr1("1");
 		obj.setAttr2(new Date());
 		obj.setAttr3(true);
@@ -91,7 +91,7 @@ public class TestClassUtils {
 
 	public static CsvFileTestClass instanciateAndInitializeCsvFileClass() {
 		final CsvFileTestClass obj = new CsvFileTestClass();
-		obj.setAttr0("0");
+		obj.setAttr0("&é'(-è_çà)=€$");
 		obj.setAttr1("1");
 		obj.setAttr2(new Date());
 		obj.setAttr3(true);
