@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_package = "fr.ekinci.universalserializer.test.protocolbuffers";
+option java_outer_classname = "ProtoComplexTestClass";
+
+message ComplexTestClass {
+	// Primitive attributes + String
+	bytes attr1 = 1;
+	int32 attr2 = 2;
+	int32 attr3 = 3;
+	int64 attr4 = 4;
+	float attr5 = 5;
+	double attr6 = 6;
+	bool attr7 = 7;
+	string attr8 = 8;
+	string attr9 = 9;
+
+	// Complex types (NOT for flat files serialization)
+	repeated double attr10 = 10;
+	repeated string attr11 = 11;
+	ComplexTestClass attr12 = 12;
+	repeated ComplexTestClass attr13 = 13;
+}

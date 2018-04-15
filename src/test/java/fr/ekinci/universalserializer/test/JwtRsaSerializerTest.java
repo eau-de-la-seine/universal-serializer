@@ -4,14 +4,18 @@ import fr.ekinci.universalserializer.exception.DeserializationException;
 import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.format.text.jwt.JwtRsaSerializer;
 import fr.ekinci.universalserializer.test.pojo.ComplexTestClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 
-import static fr.ekinci.universalserializer.test.utils.TestClassUtils.compareComplexClassValues;
-import static fr.ekinci.universalserializer.test.utils.TestClassUtils.instanciateAndInitializeComplexClass;
+import static fr.ekinci.universalserializer.test.utils.CompareTestUtils.compareComplexClassValues;
+import static fr.ekinci.universalserializer.test.utils.InitializationUtils.instanciateAndInitializeComplexClass;
 
 /**
  * A simple test of serialization and deserialization
@@ -19,34 +23,49 @@ import static fr.ekinci.universalserializer.test.utils.TestClassUtils.instanciat
  * @author Gokan EKINCI
  */
 public class JwtRsaSerializerTest {
+	private static JwtRsaSerializer<ComplexTestClass> s;
+	private static final ComplexTestClass origin = instanciateAndInitializeComplexClass();
 
-	@Test
-	public void testSerializeAndDeserialize() throws NoSuchAlgorithmException {
-		try {
-			final KeyPair keyPair = getKeyPair(1024); // Tested with 512, and "key is too short for this signature algorithm"
-			JwtRsaSerializer<ComplexTestClass> s = new JwtRsaSerializer<>(
+	@BeforeClass
+	public static void staticInit() throws NoSuchAlgorithmException {
+		final KeyPair keyPair = getKeyPair(1024); // Tested with 512, and "key is too short for this signature algorithm"
+		s = new JwtRsaSerializer<>(
 				ComplexTestClass.class,
 				"SHA512withRSA",
 				keyPair.getPrivate(),
 				keyPair.getPublic()
-			);
+		);
+	}
 
-			ComplexTestClass origin = instanciateAndInitializeComplexClass();
+	@Test
+	public void testSerializeAndDeserialize() throws SerializationException, DeserializationException {
+		// Serialization (SIGN)
+		String ser = s.serialize(origin);
 
-			// SIGN
-			String ser = s.serialize(origin);
+		// Unserialization (VERIFY)
+		ComplexTestClass generated = s.deserialize(ser);
 
-			// VERIFY
-			ComplexTestClass generated = s.deserialize(ser);
+		// Test
+		compareComplexClassValues(origin, generated);
+	}
 
-			// Test
-			compareComplexClassValues(origin, generated);
-		} catch (SerializationException | DeserializationException e) {
-			e.printStackTrace();
+	@Test
+	public void testSerializeAndDeserialize_stream() throws SerializationException, DeserializationException, IOException {
+		try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+			// Serialization (SIGN)
+			s.sendTo(origin, out);
+
+			// Unserialization (VERIFY)
+			try (ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray())) {
+				ComplexTestClass generated = s.receiveFrom(in);
+
+				// Test
+				compareComplexClassValues(origin, generated);
+			}
 		}
 	}
 
-	private KeyPair getKeyPair(int keySize) throws NoSuchAlgorithmException {
+	private static KeyPair getKeyPair(int keySize) throws NoSuchAlgorithmException {
 		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
 		keyGen.initialize(keySize);
 		return keyGen.genKeyPair();

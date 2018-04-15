@@ -1,16 +1,17 @@
 package fr.ekinci.universalserializer.format.file.csv;
 
-import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.exception.DeserializationException;
+import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.format.file.AbstractFileSerializer;
 import fr.ekinci.universalserializer.format.file.FileOptions;
+import fr.ekinci.universalserializer.format.file.exception.AbstractFileSerializerException;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,11 +30,11 @@ import java.util.List;
  */
 public class CsvSerializer<T> extends AbstractFileSerializer<T> {
 
-	public CsvSerializer(Class<T> clazz) {
+	public CsvSerializer(Class<T> clazz) throws AbstractFileSerializerException {
 		this(clazz, FileOptions.builder().build());
 	}
 
-	public CsvSerializer(Class<T> clazz, FileOptions options) {
+	public CsvSerializer(Class<T> clazz, FileOptions options) throws AbstractFileSerializerException {
 		super(
 				new Class[]{
 						byte.class,
@@ -122,7 +123,7 @@ public class CsvSerializer<T> extends AbstractFileSerializer<T> {
 
 			while (iterator.hasNext()) {
 				final CSVRecord csvRecord = iterator.next();
-				final T tuple = clazz.newInstance();
+				final T tuple = constructor.newInstance();
 				for (int i = 0; i < nbColumns; i++) {
 					setObjectFieldValue(tuple, i, csvRecord.get(i));
 				}

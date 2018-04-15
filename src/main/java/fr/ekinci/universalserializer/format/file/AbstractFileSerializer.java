@@ -3,10 +3,12 @@ package fr.ekinci.universalserializer.format.file;
 import fr.ekinci.universalserializer.Serializer;
 import fr.ekinci.universalserializer.exception.DeserializationException;
 import fr.ekinci.universalserializer.exception.SerializationException;
+import fr.ekinci.universalserializer.format.file.exception.AbstractFileSerializerException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,13 +23,20 @@ import java.util.List;
  */
 public abstract class AbstractFileSerializer<T> implements Serializer<List<T>, Path> {
 	protected final Class<T> clazz;
+	protected final Constructor<T> constructor;
 	protected final FileInfo fileInfo;
 	protected final FileOptions options;
 	protected final int nbColumns;
 	protected final List<Field> requiredFields;
 
-	public AbstractFileSerializer(Class<?>[] authorizedFieldTypes, Class<T> clazz, FileOptions options) {
+	public AbstractFileSerializer(Class<?>[] authorizedFieldTypes, Class<T> clazz, FileOptions options)
+			throws AbstractFileSerializerException {
 		this.clazz = clazz;
+		try {
+			this.constructor = clazz.getConstructor();
+		} catch (NoSuchMethodException e) {
+			throw new AbstractFileSerializerException(e);
+		}
 		this.options = options;
 
 		// Class must be annotated with FileInfo

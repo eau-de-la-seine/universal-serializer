@@ -5,6 +5,7 @@ A serialization project for transforming Java objects to another format
 ## Serialization formats
 
 Binary:
+* Apache Thrift
 * Java
 * Google Protocol Buffers
 
@@ -51,9 +52,16 @@ You have builder pattern based `FileOptions` class in order to specify your :
 
 ## Implementations (alphabetical order)
 
-### Base64 and Base64 Url serialization
+### Apache Thrift (BINARY and COMPACT)
 
-    AbstractBase64Serializer<MyClass> s = new Base64Serializer<>(); // OR new Base64UrlSerializer<>();
+    ThriftSerializer<MyClass> s = new ThriftSerializer<>(ThriftOption.BINARY);
+    byte[] byteArray = s.serialize(new MyClass(/* init */));
+    MyClass deserialized = s.deserialize(byteArray);
+
+
+### Base64 (BASIC, URL and MIME) serialization
+
+    Base64Serializer<MyClass> s = new Base64Serializer<>(Base64Option.BASIC);
     String base64String = s.serialize(new MyClass(/* init */));
     MyClass deserialized = s.deserialize(base64String);
 

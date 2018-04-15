@@ -5,6 +5,7 @@ import fr.ekinci.universalserializer.format.file.excel.exception.ExcelSerializer
 import fr.ekinci.universalserializer.exception.DeserializationException;
 import fr.ekinci.universalserializer.format.file.AbstractFileSerializer;
 import fr.ekinci.universalserializer.format.file.FileOptions;
+import fr.ekinci.universalserializer.format.file.exception.AbstractFileSerializerException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -28,11 +29,11 @@ public class ExcelSerializer<T> extends AbstractFileSerializer<T> {
 	private final Map<Class<?>, Method> cellGetterMethodMap = new HashMap<>();
 	private final Map<Class<?>, Method> cellSetterMethodMap = new HashMap<>();
 
-	public ExcelSerializer(Class<T> clazz) throws ExcelSerializerException {
+	public ExcelSerializer(Class<T> clazz) throws AbstractFileSerializerException {
 		this(clazz, FileOptions.builder().build());
 	}
 
-	public ExcelSerializer(Class<T> clazz, FileOptions options) throws ExcelSerializerException {
+	public ExcelSerializer(Class<T> clazz, FileOptions options) throws AbstractFileSerializerException {
 		super(
 				new Class[]{
 						byte.class,
@@ -155,7 +156,7 @@ public class ExcelSerializer<T> extends AbstractFileSerializer<T> {
 			}
 			while (it.hasNext()) {
 				final Row row = it.next();
-				final T tuple = clazz.newInstance();
+				final T tuple = constructor.newInstance();
 				for (int i = 0; i < nbColumns; i++) {
 					setObjectFieldValue(tuple, i, row.getCell(i));
 				}
