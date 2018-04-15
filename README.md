@@ -54,7 +54,7 @@ You have builder pattern based `FileOptions` class in order to specify your :
 
 ### Apache Thrift (BINARY and COMPACT)
 
-    ThriftSerializer<MyClass> s = new ThriftSerializer<>(ThriftOption.BINARY);
+    ThriftSerializer<MyClass> s = new ThriftSerializer<>(MyClass.class, ThriftOption.BINARY);
     byte[] byteArray = s.serialize(new MyClass(/* init */));
     MyClass deserialized = s.deserialize(byteArray);
 
