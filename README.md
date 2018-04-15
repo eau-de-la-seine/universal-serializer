@@ -5,7 +5,7 @@ A serialization project for transforming Java objects to another format
 ## Serialization formats
 
 Binary:
-* Apache Thrift
+* Apache Thrift (Binary, Compact)
 * Java
 * Google Protocol Buffers
 
@@ -14,7 +14,7 @@ File:
 * Excel
 
 Text:
-* Base64 and Base64 Url
+* Base64 (Basic, Url, Mime)
 * JWT
 * XML
 
