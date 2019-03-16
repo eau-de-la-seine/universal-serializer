@@ -5,8 +5,6 @@ import fr.ekinci.universalserializer.exception.DeserializationException;
 import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.format.text.AbstractStringSerializer;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -67,16 +65,6 @@ public abstract class AbstractJwtSerializer<T> extends AbstractStringSerializer<
 		final Base64.Decoder decoder = Base64.getUrlDecoder();
 		final String decodedPayload = new String(decoder.decode(parts[1]), StandardCharsets.UTF_8);
 		return gson.fromJson(decodedPayload, payloadType);
-	}
-
-	@Override
-	public void sendTo(T objectToSend, OutputStream outputStream) throws SerializationException {
-		defaultSendTo(objectToSend, outputStream);
-	}
-
-	@Override
-	public T receiveFrom(InputStream inputStream) throws DeserializationException {
-		return defaultReceiveFrom(inputStream);
 	}
 
 	/**

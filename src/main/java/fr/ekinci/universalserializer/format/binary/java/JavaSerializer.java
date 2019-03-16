@@ -1,10 +1,10 @@
 package fr.ekinci.universalserializer.format.binary.java;
 
-import java.io.*;
-
-import fr.ekinci.universalserializer.Serializer;
-import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.exception.DeserializationException;
+import fr.ekinci.universalserializer.exception.SerializationException;
+import fr.ekinci.universalserializer.format.binary.AbstractBinarySerializer;
+
+import java.io.*;
 
 
 /**
@@ -19,32 +19,7 @@ import fr.ekinci.universalserializer.exception.DeserializationException;
  *
  * @author Gokan EKINCI
  */
-public class JavaSerializer<T> implements Serializer<T, byte[]> {
-
-	@Override
-	public byte[] serialize(T objectToSerialize) throws SerializationException {
-		try (
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(baos)
-		) {
-			oos.writeObject(objectToSerialize);
-			return baos.toByteArray();
-		} catch (IOException e) {
-			throw new SerializationException(e);
-		}
-	}
-
-	@Override
-	public T deserialize(byte[] objectToDeserialize) throws DeserializationException {
-		try (
-				ByteArrayInputStream bais = new ByteArrayInputStream(objectToDeserialize);
-				ObjectInputStream ois = new ObjectInputStream(bais)
-		) {
-			return (T) ois.readObject();
-		} catch (IOException | ClassNotFoundException e) {
-			throw new DeserializationException(e);
-		}
-	}
+public class JavaSerializer<T> extends AbstractBinarySerializer<T> {
 
 	@Override
 	public void sendTo(T objectToSend, OutputStream outputStream) throws SerializationException {

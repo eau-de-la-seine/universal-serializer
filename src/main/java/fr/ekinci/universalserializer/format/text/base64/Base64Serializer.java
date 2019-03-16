@@ -5,8 +5,6 @@ import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.format.binary.java.JavaSerializer;
 import fr.ekinci.universalserializer.format.text.AbstractStringSerializer;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Base64;
 
 /**
@@ -47,15 +45,5 @@ public class Base64Serializer<T> extends AbstractStringSerializer<T> {
 	@Override
 	public T deserialize(String objectToDeserialize) throws DeserializationException {
 		return javaSerializer.deserialize(decoder.decode(objectToDeserialize));
-	}
-
-	@Override
-	public void sendTo(T objectToSend, OutputStream outputStream) throws SerializationException {
-		defaultSendTo(objectToSend, outputStream);
-	}
-
-	@Override
-	public T receiveFrom(InputStream inputStream) throws DeserializationException {
-		return defaultReceiveFrom(inputStream);
 	}
 }

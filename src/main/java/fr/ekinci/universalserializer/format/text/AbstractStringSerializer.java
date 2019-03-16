@@ -13,10 +13,8 @@ import java.io.OutputStream;
  */
 public abstract class AbstractStringSerializer<T> implements Serializer<T, String> {
 
-	public void defaultSendTo(
-			T objectToTransfer,
-			OutputStream outputStream
-	) throws SerializationException {
+	@Override
+	public void sendTo(T objectToTransfer, OutputStream outputStream) throws SerializationException {
 		try {
 			outputStream.write(serialize(objectToTransfer).getBytes());
 			outputStream.flush();
@@ -25,9 +23,8 @@ public abstract class AbstractStringSerializer<T> implements Serializer<T, Strin
 		}
 	}
 
-	public T defaultReceiveFrom(
-			InputStream inputStream
-	) throws DeserializationException {
+	@Override
+	public T receiveFrom(InputStream inputStream) throws DeserializationException {
 		// This implementation may change with Java 9's InputStream#readAllBytes()
 		try {
 			final byte buffer[] = new byte[1024];

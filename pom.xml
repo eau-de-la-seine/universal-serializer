@@ -14,6 +14,7 @@
 		<apache-commons-csv.version>1.6</apache-commons-csv.version>
 		<protobuf-java.version>3.7.0</protobuf-java.version>
 		<libthrift.version>0.12.0</libthrift.version>
+		<avro.version>1.8.2</avro.version>
 		<maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
 	</properties>
 
@@ -47,6 +48,11 @@
 			<groupId>org.apache.thrift</groupId>
 			<artifactId>libthrift</artifactId>
 			<version>${libthrift.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro</artifactId>
+			<version>${avro.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

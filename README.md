@@ -5,6 +5,7 @@ A serialization project for transforming Java objects to another format
 ## Serialization formats
 
 Binary:
+* Apache Avro
 * Apache Thrift (Binary, Compact)
 * Java
 * Google Protocol Buffers
@@ -51,6 +52,13 @@ You have builder pattern based `FileOptions` class in order to specify your :
 
 
 ## Implementations (alphabetical order)
+
+### Apache Avro
+
+    AvroSerializer<MyClass> s = new AvroSerializer<>(MyClass.class);
+    byte[] byteArray = s.serialize(new MyClass(/* init */));
+    MyClass deserialized = s.deserialize(byteArray);
+
 
 ### Apache Thrift (BINARY and COMPACT)
 
