@@ -5,7 +5,7 @@ A serialization project for transforming Java objects to another format
 ## Serialization formats
 
 Binary:
-* Apache Avro
+* Apache Avro (Binary, JSON)
 * Apache Thrift (Binary, Compact)
 * Java
 * Google Protocol Buffers
