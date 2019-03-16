@@ -3,6 +3,7 @@ package fr.ekinci.universalserializer.format.binary.thrift;
 import fr.ekinci.universalserializer.exception.DeserializationException;
 import fr.ekinci.universalserializer.exception.SerializationException;
 import fr.ekinci.universalserializer.format.binary.AbstractBinarySerializer;
+import fr.ekinci.universalserializer.format.binary.IStreamFactory;
 import fr.ekinci.universalserializer.format.binary.thrift.exception.ThriftSerializerException;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
@@ -24,7 +25,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class ThriftSerializer<T extends TBase> extends AbstractBinarySerializer<T> {
 	private final Constructor<T> constructor;
-	private final StreamHelper streamHelper;
+	private final IStreamFactory<TProtocol, TProtocol> streamFactory;
 
 	public ThriftSerializer(Class<T> clazz, ThriftOption option) throws ThriftSerializerException {
 		try {
@@ -35,17 +36,17 @@ public class ThriftSerializer<T extends TBase> extends AbstractBinarySerializer<
 
 		switch (option) {
 			case COMPACT:
-				streamHelper = new CompactStreamHelper();
+				streamFactory = new CompactThriftStreamFactory();
 				break;
 			default:
-				streamHelper = new BinaryStreamHelper();
+				streamFactory = new BinaryThriftStreamFactory();
 		}
 	}
 
 	@Override
 	public void sendTo(T objectToSend, OutputStream outputStream) throws SerializationException {
 		try {
-			objectToSend.write(streamHelper.outputStream(outputStream));
+			objectToSend.write(streamFactory.outputStream(outputStream));
 			outputStream.flush();
 		} catch (IOException | TException e) {
 			throw new SerializationException(e);
@@ -56,41 +57,36 @@ public class ThriftSerializer<T extends TBase> extends AbstractBinarySerializer<
 	public T receiveFrom(InputStream inputStream) throws DeserializationException {
 		try {
 			T receivedObject = constructor.newInstance();
-			receivedObject.read(streamHelper.inputStream(inputStream));
+			receivedObject.read(streamFactory.inputStream(inputStream));
 			return receivedObject;
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException | TException e) {
 			throw new DeserializationException(e);
 		}
 	}
 
-	private interface StreamHelper {
-		TProtocol outputStream(OutputStream out);
-		TProtocol inputStream(InputStream in);
-	}
-
-	private static class BinaryStreamHelper implements StreamHelper {
-
-		@Override
-		public TProtocol outputStream(OutputStream out) {
-			return new TBinaryProtocol(new TIOStreamTransport(out));
-		}
+	private static class BinaryThriftStreamFactory implements IStreamFactory<TProtocol, TProtocol> {
 
 		@Override
 		public TProtocol inputStream(InputStream in) {
 			return new TBinaryProtocol(new TIOStreamTransport(in));
 		}
-	}
-
-	private static class CompactStreamHelper implements StreamHelper {
 
 		@Override
 		public TProtocol outputStream(OutputStream out) {
-			return new TCompactProtocol(new TIOStreamTransport(out));
+			return new TBinaryProtocol(new TIOStreamTransport(out));
 		}
+	}
+
+	private static class CompactThriftStreamFactory implements IStreamFactory<TProtocol, TProtocol> {
 
 		@Override
 		public TProtocol inputStream(InputStream in) {
 			return new TCompactProtocol(new TIOStreamTransport(in));
+		}
+
+		@Override
+		public TProtocol outputStream(OutputStream out) {
+			return new TCompactProtocol(new TIOStreamTransport(out));
 		}
 	}
 }

@@ -2,6 +2,7 @@ package fr.ekinci.universalserializer.test;
 
 import fr.ekinci.universalserializer.exception.DeserializationException;
 import fr.ekinci.universalserializer.exception.SerializationException;
+import fr.ekinci.universalserializer.format.binary.avro.AvroOption;
 import fr.ekinci.universalserializer.format.binary.avro.AvroSerializer;
 import fr.ekinci.universalserializer.format.binary.thrift.exception.ThriftSerializerException;
 import fr.ekinci.universalserializer.test.pojo.ComplexTestClass;
@@ -20,13 +21,13 @@ import static fr.ekinci.universalserializer.test.utils.InitializationUtils.insta
  *
  * @author Gokan EKINCI
  */
-public class AvroSerializerTest {
+public class AvroJsonSerializerTest {
 	private static AvroSerializer<ComplexTestClass> s;
 	private static final ComplexTestClass origin = instanciateAndInitializeComplexClass();
 
 	@BeforeClass
 	public static void staticInit() throws ThriftSerializerException {
-		s = new AvroSerializer<>(ComplexTestClass.class);
+		s = new AvroSerializer<>(ComplexTestClass.class, AvroOption.JSON);
 	}
 
 	@Test

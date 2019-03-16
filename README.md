@@ -53,9 +53,9 @@ You have builder pattern based `FileOptions` class in order to specify your :
 
 ## Implementations (alphabetical order)
 
-### Apache Avro
+### Apache Avro (BINARY and JSON)
 
-    AvroSerializer<MyClass> s = new AvroSerializer<>(MyClass.class);
+    AvroSerializer<MyClass> s = new AvroSerializer<>(MyClass.class, AvroOption.BINARY);
     byte[] byteArray = s.serialize(new MyClass(/* init */));
     MyClass deserialized = s.deserialize(byteArray);
 
