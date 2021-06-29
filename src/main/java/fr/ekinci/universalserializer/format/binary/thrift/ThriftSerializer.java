@@ -11,6 +11,7 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TCompactProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TIOStreamTransport;
+import org.apache.thrift.transport.TTransportException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,26 +68,42 @@ public class ThriftSerializer<T extends TBase> extends AbstractBinarySerializer<
 	private static class BinaryThriftStreamFactory implements IStreamFactory<TProtocol, TProtocol> {
 
 		@Override
-		public TProtocol inputStream(InputStream in) {
-			return new TBinaryProtocol(new TIOStreamTransport(in));
+		public TProtocol inputStream(InputStream in) throws DeserializationException {
+			try {
+				return new TBinaryProtocol(new TIOStreamTransport(in));
+			} catch (TTransportException e) {
+				throw new DeserializationException(e);
+			}
 		}
 
 		@Override
-		public TProtocol outputStream(OutputStream out) {
-			return new TBinaryProtocol(new TIOStreamTransport(out));
+		public TProtocol outputStream(OutputStream out) throws SerializationException {
+			try {
+				return new TBinaryProtocol(new TIOStreamTransport(out));
+			} catch (TTransportException e) {
+				throw new SerializationException(e);
+			}
 		}
 	}
 
 	private static class CompactThriftStreamFactory implements IStreamFactory<TProtocol, TProtocol> {
 
 		@Override
-		public TProtocol inputStream(InputStream in) {
-			return new TCompactProtocol(new TIOStreamTransport(in));
+		public TProtocol inputStream(InputStream in) throws DeserializationException {
+			try {
+				return new TCompactProtocol(new TIOStreamTransport(in));
+			} catch (TTransportException e) {
+				throw new DeserializationException(e);
+			}
 		}
 
 		@Override
-		public TProtocol outputStream(OutputStream out) {
-			return new TCompactProtocol(new TIOStreamTransport(out));
+		public TProtocol outputStream(OutputStream out) throws SerializationException {
+			try {
+				return new TCompactProtocol(new TIOStreamTransport(out));
+			} catch (TTransportException e) {
+				throw new SerializationException(e);
+			}
 		}
 	}
 }
