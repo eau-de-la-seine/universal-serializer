@@ -14,7 +14,7 @@
 		<apache-commons-csv.version>1.9.0</apache-commons-csv.version>
 		<protobuf-java.version>3.19.1</protobuf-java.version>
 		<libthrift.version>0.15.0</libthrift.version>
-		<avro.version>1.11.0</avro.version>
+		<avro.version>1.11.3</avro.version>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 	</properties>
 
